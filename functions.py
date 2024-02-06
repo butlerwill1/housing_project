@@ -62,10 +62,12 @@ def groupby_calc_price(df, group_cols):
     
     return aggregated_df
 
+
+# Function to calculate percentage changes for a given level (area, district, sector)
 def calculate_pct_change(df, level):
 
     # Define the Window specification
-    windowSpec = Window.partitionBy(level).orderBy("year").rowsBetween(Window.unboundedPreceding, Window.currentRow)
+    windowSpec = Window.partitionBy(level).orderBy("year")
     
     # 2. Lag Features
     for i in [1, 2, 5]:  # Change intervals as needed
