@@ -9,6 +9,13 @@ import functions as func
 import importlib
 importlib.reload(func)
 import os
+
+sample_quality_params = {
+    'min_transactions': 30,
+    'max_cv': 50, # Maximum allowed Coefficient of variance 
+    'max_median_mean_diff_pct': 10, # Maximum allowed percentage difference between the median and mean, to see whether a few large property prices skew the mean
+    'max_iqr_pct': 25 # Maximum allowed percentage of the Interquartile range divided by the mediam, another measure of skewnwss
+}
 #%%
 spark = SparkSession.builder \
         .appName("GroupBy").getOrCreate()
@@ -42,9 +49,9 @@ print(f"Number of rows in sector_grouby_df = {sector_grouby_df.count()}")
 #%%
 
 # Usage of the function
-area_pct_change = func.calculate_pct_change(area_groupby_df, "postcode_area")
-district_pct_change = func.calculate_pct_change(district_groupby_df, "postcode_district")
-sector_pct_change = func.calculate_pct_change(sector_grouby_df, "postcode_sector")
+area_pct_change = func.calculate_pct_change(area_groupby_df, "postcode_area", ['property_type'])
+district_pct_change = func.calculate_pct_change(district_groupby_df, "postcode_district", ['property_type'])
+sector_pct_change = func.calculate_pct_change(sector_grouby_df, "postcode_sector", ['property_type'])
 
 # Show results
 area_pct_change.show()
@@ -57,6 +64,6 @@ sector_pct_change.show()
 # district_pct_change.write.mode('overwrite').csv("s3a://landregistryproject/district_pct_change.csv")
 # sector_pct_change.write.mode('overwrite').csv("s3a://landregistryproject/sector_pct_change.csv")
 
-area_pct_change.coalesce(1).write.format("csv").option("header", "true").save("s3a://landregistryproject/area_pct_change.csv")
-district_pct_change.coalesce(1).write.format("csv").option("header", "true").save("s3a://landregistryproject/district_pct_change.csv")
-sector_pct_change.coalesce(1).write.format("csv").option("header", "true").save("s3a://landregistryproject/sector_pct_change.csv")
+area_pct_change.coalesce(1).write.format("csv").option("header", "true").mode("overwrite").save("s3a://landregistryproject/area_pct_change.csv")
+district_pct_change.coalesce(1).write.format("csv").option("header", "true").mode("overwrite").save("s3a://landregistryproject/district_pct_change.csv")
+sector_pct_change.coalesce(1).write.format("csv").option("header", "true").mode("overwrite").save("s3a://landregistryproject/sector_pct_change.csv")

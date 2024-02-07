@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import udf, col, avg, count, expr, year, lag, when
+from pyspark.sql.functions import udf, col, avg, count, expr, year, lag, when, stddev
 from pyspark.sql.types import StringType, StructType, StructField
 from pyspark.sql.window import Window
 import re
@@ -14,7 +14,7 @@ def split_postcode(postcode):
     
     # Check if there's a second part for the postcode
     if len(parts) > 1 and parts[1]:
-        sector = district + parts[1][0]  # Adds the first digit of the second part of the postcode
+        sector = district + "-" + parts[1][0]  # Adds the first digit of the second part of the postcode
     else:
         sector = 'Unknown'
     
@@ -55,19 +55,36 @@ def groupby_calc_price(df, group_cols):
         .agg(
             count("*").alias("num_transactions"),
             avg("price").alias("avg_price"),
+            stddev("price").alias("stddev_price"),
             expr("percentile_approx(price, 0.25)").alias("25th_percentile_price"),
-            expr("percentile_approx(price, 0.5)").alias("50th_percentile_price"),
+            expr("percentile_approx(price, 0.5)s").alias("50th_percentile_price"),
             expr("percentile_approx(price, 0.75)").alias("75th_percentile_price")
-        )
+        ) \
+        .withColumn("cv", (col("stddev_price") / col("avg_price")) * 100) \
+        .withColumn("iqr", col("75th_percentile") - col("25th_percentile")) \
+        .withColumn("median_mean_diff", col("median_price") - col("avg_price"))
+    
+    aggregated_df = aggregated_df.withColumn("median_mean_diff_pct",
+                                             (abs(col("median_mean_diff")) / col("50th_percentile_price")) * 100) \
+                                 .withColumn("iqt_pct",
+                                             (col("iqr") / col("median_price")) * 100)
+                                            
     
     return aggregated_df
 
 
 # Function to calculate percentage changes for a given level (area, district, sector)
-def calculate_pct_change(df, level):
+def calculate_pct_change(df, level, cols_to_order=None):
+
+    if cols_to_order is None:
+        cols_to_order = ["year"]
+    else:
+        cols_to_order = list(cols_to_order)
+        if "year" not in cols_to_order:
+            cols_to_order.append("year")
 
     # Define the Window specification
-    windowSpec = Window.partitionBy(level).orderBy("year")
+    windowSpec = Window.partitionBy(level).orderBy(*cols_to_order)
     
     # 2. Lag Features
     for i in [1, 2, 5]:  # Change intervals as needed

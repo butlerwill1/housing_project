@@ -25,7 +25,7 @@ parquet_folder_path = "s3a://landregistryproject/land_registry_data.parquet"
 
 # Usage in a DataFrame
 df = spark.read.parquet(parquet_folder_path)
-df = df.withColumn("postcode_parts", split_postcode_udf(df["postcode"]))
+df = df.withColumn("postcode_parts", func.split_postcode_udf(df["postcode"]))
 df = df.select("*", "postcode_parts.*")  # Flatten the struct into separate columns
 
 # Write to Parquet
