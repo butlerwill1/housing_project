@@ -4,6 +4,8 @@
 
 import pandas as pd
 import regex as re
+import matplotlib.pyplot as plt
+import veetility
 #%%
 land_registry_data = pd.read_csv("land_registry_data.csv")
 # %%
@@ -31,4 +33,20 @@ print(district)
 print(sector)
 # %%
 
+# %%
+district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+# %%
+district_groupby = district_groupby[district_groupby['property_type']=='F']
+
+# %%
+london_district = district_groupby[district_groupby['is_london?']!='Outside London']
+# %%
+london_district = london_district[london_district['year'] >= 2021]
+# %%
+districts_below_30_transactions = london_district[london_district['num_transactions']<=200]['postcode_district'].unique().tolist()
+# %%
+london_district = london_district[~london_district['postcode_district'].isin(districts_below_30_transactions)]
+
+# %%
+plt.scatter(london_district['75th_percentile_price'],london_district['coef_var'])
 # %%
