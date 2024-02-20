@@ -1,2 +1,15 @@
 *.csv
 *.pem
+*.shp
+*.dbf
+*.prj
+*.qix
+*.qml
+*.qpj
+*.shx
+*.xlsx
+English_IMD_2019/
+GB_Postcodes/
+*.sql
+*.pyc
+*.DS_Store

@@ -2,6 +2,7 @@ from pyspark.sql import SparkSession
 from pyspark.sql.functions import udf, col, avg, count, expr, year, lag, when, stddev, abs, round, skewness, kurtosis
 from pyspark.sql.types import StringType, StructType, StructField
 from pyspark.sql.window import Window
+import pandas as pd
 import re
 
 def split_postcode(postcode):
@@ -24,7 +25,13 @@ def classify_london_postcode(area_code, district_code):
     # Central London postcode areas and specific districts
     central_london_areas = ['EC', 'WC']
     central_london_districts = ['W1', 'SW1', 'NW1', 'SE1', 'E1', 'N1', 
-                                'WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4']
+                                'WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
+                                'EC1A', 'EC1M', 'EC1N', 'EC1P', 'EC1R',
+                                'EC1V', 'EC1Y', 'EC2A', 'EC2M', 'EC2N',
+                                'EC2P', 'EC2R', 'EC2V', 'EC2Y', 'EC3A',
+                                'EC3M', 'EC3N', 'EC3P', 'EC3R', 'EC3V',
+                                'EC4A', 'EC4M', 'EC4N', 'EC4P', 'EC4R',
+                                'EC4V', 'EC4Y', 'EC50']
     
     # Greater London postcode areas (including those overlapping with Central London)
     greater_london_areas = central_london_areas + ['E', 'N', 'NW', 'SE', 
@@ -57,19 +64,19 @@ def groupby_calc_price(df, group_cols):
             round(avg("price"),1).alias("avg_price"),
             round(stddev("price"),1).alias("stddev_price"),
             round(expr("percentile_approx(price, 0.25)"), 1).alias("25th_percentile_price"),
-            round(expr("percentile_approx(price, 0.5)"), 1).alias("50th_percentile_price"),
+            round(expr("percentile_approx(price, 0.5)"), 1).alias("median_price"),
             round(expr("percentile_approx(price, 0.75)"), 1).alias("75th_percentile_price"),
             round(skewness("price"), 2).alias("skewness_price"),
             round(kurtosis("price"), 2).alias("kurtosis_price")
         ) \
         .withColumn("coef_var", round((col("stddev_price") / col("avg_price")) * 100, 1)) \
         .withColumn("iqr", round((col("75th_percentile_price") - col("25th_percentile_price")), 1)) \
-        .withColumn("median_mean_diff", round((col("50th_percentile_price") - col("avg_price")), 1))
+        .withColumn("median_mean_diff", round((col("median_price") - col("avg_price")), 1))
     
     aggregated_df = aggregated_df.withColumn("median_mean_diff_pct",
-                                             round(abs(col("median_mean_diff") / col("50th_percentile_price")) * 100, 1)) \
+                                             round(abs(col("median_mean_diff") / col("median_price")) * 100, 1)) \
                                  .withColumn("iqr_pct",
-                                             round(col("iqr") / col("50th_percentile_price") * 100, 1))
+                                             round(col("iqr") / col("median_price") * 100, 1))
                                             
     
     return aggregated_df
@@ -83,11 +90,11 @@ def calculate_pct_change(df, partition_cols):
     windowSpec = Window.partitionBy(*partition_cols).orderBy("year")
     
     # Calculate the median price for the previous year
-    df = df.withColumn("lag_median_price", lag("50th_percentile_price", 1).over(windowSpec))
+    df = df.withColumn("lag_median_price", lag("median_price", 1).over(windowSpec))
     
     # Calculate the year-over-year percentage change based on median price
     df = df.withColumn("median_pct_change_1_year",
-                       (col("50th_percentile_price") - col("lag_median_price")) * 100 / col("lag_median_price"))
+                       (col("median_price") - col("lag_median_price")) * 100 / col("lag_median_price"))
 
     # Define the Window specification for rolling average calculations
     # For a 2-year rolling average
@@ -111,17 +118,17 @@ def calculate_pct_change(df, partition_cols):
 
     windowSpecPartitionOnly = Window.partitionBy(*partition_cols)
     # Calculate the standard deviation of skewness and kurtosis across years within each group
-    df = df.withColumn("stddev_skewness", stddev("skewness_price").over(windowSpecPartitionOnly))
-    df = df.withColumn("stddev_kurtosis", stddev("kurtosis_price").over(windowSpecPartitionOnly))
-    df = df.withColumn("avg_skewness", stddev("skewness_price").over(windowSpecPartitionOnly))
-    df = df.withColumn("avg_kurtosis", stddev("kurtosis_price").over(windowSpecPartitionOnly))
+    # df = df.withColumn("stddev_skewness", stddev("skewness_price").over(windowSpecPartitionOnly))
+    # df = df.withColumn("stddev_kurtosis", stddev("kurtosis_price").over(windowSpecPartitionOnly))
+    # df = df.withColumn("avg_skewness", stddev("skewness_price").over(windowSpecPartitionOnly))
+    # df = df.withColumn("avg_kurtosis", stddev("kurtosis_price").over(windowSpecPartitionOnly))
 
-    df = df.withColumn("perc_stddev_skewness", col(""))
-    df = df.withColumn("perc_stddev_kurtosis", )
+    # df = df.withColumn("perc_stddev_skewness", col("stddev_skewness") * 100 / col("avg_skewness"))
+    # df = df.withColumn("perc_stddev_kurtosis", col("stddev_kurtosis") * 100 / col("avg_kurtosis"))
 
-    # Round the calculated standard deviations
-    df = df.withColumn("stddev_skewness", round(col("stddev_skewness"), 2))
-    df = df.withColumn("stddev_kurtosis", round(col("stddev_kurtosis"), 2))
+    # # Round the calculated standard deviations
+    # df = df.withColumn("stddev_skewness", round(col("stddev_skewness"), 2))
+    # df = df.withColumn("stddev_kurtosis", round(col("stddev_kurtosis"), 2))
 
     # Handle Missing Values (Optional)
     df = df.fillna(0)  # This replaces nulls with 0, adjust as per your requirements
@@ -139,9 +146,11 @@ def evaluate_sample_quality(df, params):
                            (col("coef_var") <= max_coef_var) &
                            (col("median_mean_diff_pct") <= max_median_mean_diff_pct) &
                            (col("iqr_pct") <= max_iqr_pct))
-                            (col("skewness_price") <= s) &
+                            # (col("skewness_price") <= s) &
     
     return df
+
+
 
 # Function to calculate percentage changes for a given level (area, district, sector)
 # def calculate_pct_change(df, partition_cols):

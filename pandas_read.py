@@ -11,8 +11,9 @@ land_registry_data = pd.read_csv("land_registry_data.csv")
 # %%
 land_registry_data.columns
 #%%
-
-[postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("E3 ")]
+land_registry_data['postcode'].fillna('', inplace=True)
+#%%
+[postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("EC1V")]
 # %%
 [postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("E32")]
 # %%
@@ -39,14 +40,38 @@ district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
 district_groupby = district_groupby[district_groupby['property_type']=='F']
 
 # %%
-london_district = district_groupby[district_groupby['is_london?']!='Outside London']
+# district_groupby = district_groupby[district_groupby['is_london?']!='Outside London']
 # %%
-london_district = london_district[london_district['year'] >= 2021]
+# district_groupby = district_groupby[district_groupby['year'] >= ]
 # %%
-districts_below_30_transactions = london_district[london_district['num_transactions']<=200]['postcode_district'].unique().tolist()
+districts_below_transactions_thresh = district_groupby[district_groupby['num_transactions']<=60]['postcode_district'].unique().tolist()
 # %%
-london_district = london_district[~london_district['postcode_district'].isin(districts_below_30_transactions)]
+district_groupby = district_groupby[~district_groupby['postcode_district'].isin(districts_below_transactions_thresh)]
 
+#%%
+perc_price_rise_2023 = district_groupby[district_groupby['year']==2023][['postcode_district', 'property_type', 'rolling_avg_median_pct_change_5_year']].rename(columns={'rolling_avg_median_pct_change_5_year':'2023_rolling_5_average'})
+
+#%%
+district_groupby = pd.merge(district_groupby, perc_price_rise_2023, 
+                           on=['postcode_district', 'property_type'])
+#%%
+district_groupby.sort_values(['2023_rolling_5_average', 'postcode_district', 
+                            'year'],
+                             ascending=[False, True, False], inplace=True)
+
+#%%
+district_groupby.to_csv("District_Ordered_AverageALLYears%.csv")
 # %%
-plt.scatter(london_district['75th_percentile_price'],london_district['coef_var'])
+plt.title("Average Price of Flat Vs Percentage Change By Postcode District")
+plt.xlabel("Average Price")
+plt.ylabel("5 Year Rolling Average % Change")
+plt.scatter(district_groupby['avg_price'],district_groupby['rolling_avg_median_pct_change_5_year'])
+# %%
+test = district_groupby[(district_groupby['is_london?']!='Outside London')&(district_groupby['property_type']=='F')]
+plt.title("Average Price of Flat Vs Number of transactions")
+plt.xlabel("Average Price")
+plt.ylabel("Number of Transactions")
+plt.xlim(300000, 400000)
+plt.ylim(50, 200)
+plt.scatter(test['avg_price'],test['num_transactions'])
 # %%
