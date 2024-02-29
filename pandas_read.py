@@ -36,14 +36,17 @@ print(sector)
 
 # %%
 district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
-# %%
+# %%---------------------------------------------------------------------------------------
+#                 Order the dataset by largest % price increase in 2023
+# ---------------------------------------------------------------------------------------
+
 district_groupby = district_groupby[district_groupby['property_type']=='F']
 
 # %%
 # district_groupby = district_groupby[district_groupby['is_london?']!='Outside London']
 # %%
 # district_groupby = district_groupby[district_groupby['year'] >= ]
-# %%
+# %%  Districts below a certain number of samples
 districts_below_transactions_thresh = district_groupby[district_groupby['num_transactions']<=60]['postcode_district'].unique().tolist()
 # %%
 district_groupby = district_groupby[~district_groupby['postcode_district'].isin(districts_below_transactions_thresh)]

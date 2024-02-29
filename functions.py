@@ -66,6 +66,8 @@ def groupby_calc_price(df, group_cols):
             round(expr("percentile_approx(price, 0.25)"), 1).alias("25th_percentile_price"),
             round(expr("percentile_approx(price, 0.5)"), 1).alias("median_price"),
             round(expr("percentile_approx(price, 0.75)"), 1).alias("75th_percentile_price"),
+            round(expr("percentile_approx(price, 0.90)"), 1).alias("90th_percentile_price"),
+            round(expr("percentile_approx(price, 0.95)"), 1).alias("95th_percentile_price"),
             round(skewness("price"), 2).alias("skewness_price"),
             round(kurtosis("price"), 2).alias("kurtosis_price")
         ) \

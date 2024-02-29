@@ -8,15 +8,18 @@ postcode_dist_poly = gpd.read_file("GB_Postcodes/PostalDistrict.shp")
 
 postcode_dist_poly['AreaKm2'] = postcode_dist_poly.geometry.area / 1000000
 #%%
-print(postcode_dist_poly.head(20))
-# %%
-postcode_dist_poly.plot()
-
-postcode_dist_poly[postcode_dist_poly['PostDist']=='E3'].plot()
+print(postcode_dist_poly.crs)
+# Convert into a UK specific CRS
+postcode_dist_poly = postcode_dist_poly.to_crs("EPSG:4326")
+# Rename the geometry to another column so that you can merge it back later after the aggregation
+postcode_dist_poly['postcode_dist_geometry'] = postcode_dist_poly.geometry
 # %%
 # os_code_point = gpd.read_file("vmdvec_gb.gpkg")
 # %%
 socio_economic = gpd.read_file("English_IMD_2019/IMD_2019.shp")
+print(socio_economic.crs)
+# Convert into a UK specific CRS
+socio_economic = socio_economic.to_crs("EPSG:4326")
 # %%
 socio_economic_postcode = gpd.sjoin(socio_economic, postcode_dist_poly, how='inner', op='within')
 
@@ -25,7 +28,7 @@ socio_economic_postcode = gpd.sjoin(socio_economic, postcode_dist_poly, how='inn
 def postcode_socio_grouby_agg(x):
 
     d = {}
-    
+    d['geometry'] = x['postcode_dist_geometry'].iloc[0]
     d['AreaName'] = x['LADnm'].iloc[0]
     d['Locale'] = x['Locale'].iloc[0]
     d['CountLowLevelAreas'] = x.shape[0]
@@ -94,15 +97,15 @@ def postcode_socio_grouby_agg(x):
 
 aggregated_data = socio_economic_postcode.groupby("PostDist").apply(postcode_socio_grouby_agg).reset_index()
 
-# %%
+#%% Pick up the dataset from the Groupby Aggregations on the land registry dataset
+# This dataset contains no geometry data, only the string code Postcode district
 district_groupby = pd.read_csv("District_Ordered_Average%.csv")
 
 #%%
 district_groupby_socio_economic = pd.merge(district_groupby, aggregated_data, 
                                            how='left', left_on='postcode_district',
                                            right_on='PostDist')
-# %%
-district_groupby_socio_economic
+
 # %%
 cols = ['postcode_district', 'is_london?', 'AreaName', 'Locale',
         'property_type', 'year',
@@ -112,7 +115,7 @@ cols = ['postcode_district', 'is_london?', 'AreaName', 'Locale',
        'median_mean_diff_pct', 'iqr_pct', 'lag_median_price',
        'median_pct_change_1_year', 'rolling_avg_median_pct_change_2_year',
        'rolling_avg_median_pct_change_5_year', 'is_good_sample',
-       '2023_rolling_5_average', 'PostDist', 
+       '2023_rolling_5_average', 'PostDist', 'geometry',
        'CountLowLevelAreas', 'AreaKm2', 'Population', 'Population_16-59',
        'Population_60+', 'PopulationDensity', 'IMDScore_Avg', 'IMDRank0_Avg',
        'IMDScore_Median', 'IMDScore_Max', 'IMDScore_Min', 'IncScore_Avg',
@@ -128,9 +131,19 @@ cols = ['postcode_district', 'is_london?', 'AreaName', 'Locale',
 
 #%%
 district_groupby_socio_economic = district_groupby_socio_economic[cols]
+
+district_groupby_socio_economic_gdf = gpd.GeoDataFrame(district_groupby_socio_economic, geometry='geometry')
 # %%
-district_groupby_socio_economic.to_excel("district_groupby_socio_economic.xlsx")
-# %%
+# district_groupby_socio_economic.to_excel("district_groupby_socio_economic.xlsx")
+
+# district_groupby_socio_economic = district_groupby_socio_economic[district_groupby_socio_economic['PostDist']=='E3']
+
+district_groupby_socio_economic_gdf.to_file("district_groupby_socio_economic.gpkg", layer='socio', driver="GPKG")
+
+
+# %%-----------------------------------------------------------------------------------------------
+#                                                Graphs
+# -------------------------------------------------------------------------------------------------
 test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
 plt.title("Population Density Vs Number of transactions")
 plt.xlabel("Population Density")
@@ -139,9 +152,9 @@ plt.ylabel("Number of Transactions")
 plt.scatter(test['PopulationDensity'],test['num_transactions'])
 # %%
 test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
-plt.title("IMDScore_Avg Vs EnvScore_Avg")
-plt.xlabel("IMDScore_Avg")
-plt.ylabel("EnvScore_Avg")
+plt.title("CountLowLevelAreas Vs AreaKm2")
+plt.xlabel("CountLowLevelAreas")
+plt.ylabel("AreaKm2")
 
-plt.scatter(test['IMDScore_Avg'],test['EnvScore_Avg'])
+plt.scatter(test['CountLowLevelAreas'],test['AreaKm2'])
 # %%
