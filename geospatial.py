@@ -38,60 +38,61 @@ def postcode_socio_grouby_agg(x):
     d['Population_60+'] = x['Pop60+'].sum()
     d['PopulationDensity'] = round(d['Population'] / d['AreaKm2'], 2)
 
-    d['IMDScore_Avg'] = round(x['IMDScore'].mean(), 2)
-    d['IMDRank0_Avg'] = round(x['IMDRank0'].mean(), 2)
-    d['IMDScore_Median'] = round(x['IMDScore'].median(), 2)
-    d['IMDScore_Max'] = x['IMDScore'].max()
-    d['IMDScore_Min'] = x['IMDScore'].min()
+    # Weighted Score of multiple factors, weightings can be found in "English_Socio_Economic.md"   
+    d['OverallAvg'] = round(x['IMDScore'].mean(), 2)
+    d['OverallRankAvg'] = round(x['IMDRank0'].mean(), 2)
+    d['OverallMedian'] = round(x['IMDScore'].median(), 2)
+    d['OverallMax'] = x['IMDScore'].max()
+    d['OverallMin'] = x['IMDScore'].min()
 
     # Income Score
-    d['IncScore_Avg'] = round(x['IncScore'].mean(), 2)
-    d['IncRank_Avg'] = round(x['IncRank'].mean(), 2)
-    d['IncScore_Median'] = round(x['IncScore'].median(), 2)
-    d['IncScore_Max'] = x['IncScore'].max()
-    d['IncScore_Min'] = x['IncScore'].min()
+    d['IncomeAvg'] = round(x['IncScore'].mean(), 2)
+    d['InccomeRankAvg'] = round(x['IncRank'].mean(), 2)
+    d['IncomeMedian'] = round(x['IncScore'].median(), 2)
+    d['IncomeMax'] = x['IncScore'].max()
+    d['IncomeMin'] = x['IncScore'].min()
 
     # Education, skills and training
-    d['EduScore_Avg'] = round(x['EduScore'].mean(), 2)
-    d['EduRank_Avg'] = round(x['EduRank'].mean(), 2)
-    d['EduScore_Median'] = round(x['EduScore'].median(), 2)
-    d['EduScore_Max'] = x['EduScore'].max()
-    d['EduScore_Min'] = x['EduScore'].min()
+    d['EducationAvg'] = round(x['EduScore'].mean(), 2)
+    d['EducationRankAvg'] = round(x['EduRank'].mean(), 2)
+    d['EducationMedian'] = round(x['EduScore'].median(), 2)
+    d['EducationMax'] = x['EduScore'].max()
+    d['EducationMin'] = x['EduScore'].min()
 
     # Crime Score
-    d['CriScore_Avg'] = round(x['CriScore'].mean(), 2)
-    d['CriRank_Avg'] = round(x['CriRank'].mean(), 2)
-    d['CriScore_Median'] = round(x['CriScore'].median(), 2)
-    d['CriScore_Max'] = x['CriScore'].max()
-    d['CriScore_Min'] = x['CriScore'].min()
+    d['CrimeAvg'] = round(x['CriScore'].mean(), 2)
+    d['CrimeRankAvg'] = round(x['CriRank'].mean(), 2)
+    d['CrimeMedian'] = round(x['CriScore'].median(), 2)
+    d['CrimeMax'] = x['CriScore'].max()
+    d['CrimeMin'] = x['CriScore'].min()
     
     # Environment Score, measures the quality of the local environment
-    d['EnvScore_Avg'] = round(x['EnvScore'].mean(), 2)
-    d['EnvRank_Avg'] = round(x['EnvRank'].mean(), 2)
-    d['EnvScore_Median'] = round(x['EnvScore'].median(), 2)
-    d['EnvScore_Max'] = x['EnvScore'].max()
-    d['EnvScore_Min'] = x['EnvScore'].min()
+    d['EnvironmentAvg'] = round(x['EnvScore'].mean(), 2)
+    d['EnvironmentRankAvg'] = round(x['EnvRank'].mean(), 2)
+    d['EnvironmentMedian'] = round(x['EnvScore'].median(), 2)
+    d['EnvironmentMax'] = x['EnvScore'].max()
+    d['EnvironmentMin'] = x['EnvScore'].min()
 
-    # Geographical Barriers Score
-    d['GBScore_Avg'] = round(x['GBScore'].mean(), 2)
-    d['GBRank_Avg'] = round(x['GBRank'].mean(), 2)
-    d['GBScore_Median'] = round(x['GBScore'].median(), 2)
-    d['GBScore_Max'] = x['GBScore'].max()
-    d['GBScore_Min'] = x['GBScore'].min()
+    # Geographical Barriers Score, physical proximity to local services
+    d['GeographBarriersAvg'] = round(x['GBScore'].mean(), 2)
+    d['GeographBarriersRankAvg'] = round(x['GBRank'].mean(), 2)
+    d['GeographBarriersMedian'] = round(x['GBScore'].median(), 2)
+    d['GeographBarriersMax'] = x['GBScore'].max()
+    d['GeographBarriersMin'] = x['GBScore'].min()
 
     # Indoor Living Environment Score
-    d['IndScore_Avg'] = round(x['IndScore'].mean(), 2)
-    d['IndRank_Avg'] = round(x['IndRank'].mean(), 2)
-    d['IndScore_Median'] = round(x['IndScore'].median(), 2)
-    d['IndScore_Max'] = x['IndScore'].max()
-    d['IndScore_Min'] = x['IndScore'].min()
+    d['IndoorLivingAvg'] = round(x['IndScore'].mean(), 2)
+    d['IndRankAvg'] = round(x['IndRank'].mean(), 2)
+    d['IndoorLivingMedian'] = round(x['IndScore'].median(), 2)
+    d['IndoorLivingMax'] = x['IndScore'].max()
+    d['IndoorLivingMin'] = x['IndScore'].min()
 
     # Childrens and Young People's service
-    d['CYPScore_Avg'] = round(x['CYPScore'].mean(), 2)
-    d['CYPRank_Avg'] = round(x['CYPRank'].mean(), 2)
-    d['CYPScore_Median'] = round(x['CYPScore'].median(), 2)
-    d['CYPScore_Max'] = x['CYPScore'].max()
-    d['CYPScore_Min'] = x['CYPScore'].min()
+    d['YoungServicesAvg'] = round(x['CYPScore'].mean(), 2)
+    d['YoungServicesAvg'] = round(x['CYPRank'].mean(), 2)
+    d['YoungServicesMedian'] = round(x['CYPScore'].median(), 2)
+    d['YoungServicesMax'] = x['CYPScore'].max()
+    d['YoungServicesMin'] = x['CYPScore'].min()
 
     return pd.Series(d, index=list(d.keys()))
 

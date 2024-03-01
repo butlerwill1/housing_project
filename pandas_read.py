@@ -40,7 +40,7 @@ district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
 #                 Order the dataset by largest % price increase in 2023
 # ---------------------------------------------------------------------------------------
 
-district_groupby = district_groupby[district_groupby['property_type']=='F']
+# district_groupby = district_groupby[district_groupby['property_type']=='F']
 
 # %%
 # district_groupby = district_groupby[district_groupby['is_london?']!='Outside London']
@@ -51,10 +51,10 @@ districts_below_transactions_thresh = district_groupby[district_groupby['num_tra
 # %%
 district_groupby = district_groupby[~district_groupby['postcode_district'].isin(districts_below_transactions_thresh)]
 
-#%%
+#%% Calculate the 5 year rolling average percentage price rise for the latest year (2023)
 perc_price_rise_2023 = district_groupby[district_groupby['year']==2023][['postcode_district', 'property_type', 'rolling_avg_median_pct_change_5_year']].rename(columns={'rolling_avg_median_pct_change_5_year':'2023_rolling_5_average'})
 
-#%%
+#%% 
 district_groupby = pd.merge(district_groupby, perc_price_rise_2023, 
                            on=['postcode_district', 'property_type'])
 #%%

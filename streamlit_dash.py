@@ -27,8 +27,12 @@ print("Dataset read in")
 st.title('Postcode Lottery')
 col1, col2 = st.columns(2)
 with col1:
+    london_or_not = st.multiselect("London Or Outside London?", 
+                                   sorted(district_groupby_socio_economic['is_london?'].unique()),
+                                   default='Greater London')
+
     district_choices = st.multiselect("Select Postcode District", 
-                                  district_groupby_socio_economic['PostDist'].unique(),
+                sorted(district_groupby_socio_economic[district_groupby_socio_economic['is_london?'].isin(london_or_not)]['PostDist'].unique()),
                                   default='E3')
 # %%
 district_groupby_socio_economic = district_groupby_socio_economic[ \
@@ -41,10 +45,28 @@ latitude = district_groupby_socio_economic.geometry.centroid.y.mean()
 
 # geojson = district_groupby_socio_economic.__geo_interface__
 
+# Filter the GeoDataFrame based on the selected districts
+selected_districts = district_groupby_socio_economic[
+    district_groupby_socio_economic['PostDist'].isin(district_choices)
+]
+
+# Calculate the bounds of the selected polygons
+bounds = selected_districts.geometry.total_bounds
+minx, miny, maxx, maxy = bounds
+
+# Calculate the center of the bounds
+center = [(miny + maxy) / 2, (minx + maxx) / 2]
+
+# Initialize the map at the center of the bounds
+m = folium.Map(location=center)
+
+# Fit the map to the bounds
+m.fit_bounds([[miny, minx], [maxy, maxx]])
+
 #%%
 
 
-m = folium.Map(location=[latitude, longitude], zoom_start=12)
+# m = folium.Map(location=[latitude, longitude], zoom_start=12)
 
 # Create a Folium map object
 # Define the tooltip to use the 'PostDist' column from your GeoDataFrame
@@ -79,10 +101,12 @@ default_display_cols = ['postcode_district', 'avg_price', '2023_rolling_5_averag
 
 with col2:
     display_cols = st.multiselect("Select Info Columns", 
-                   options=district_groupby_socio_economic.columns, 
+                   options=sorted(district_groupby_socio_economic.columns), 
                    default=default_display_cols)
     
-    st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['year']==2023][display_cols])
+    st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['year']==2023][display_cols],
+                 use_container_width=True,
+                 hide_index=True)
 # %%
 # Set the viewport for the map
 # viewport = pdk.ViewState(latitude=latitude, 
