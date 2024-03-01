@@ -1,20 +1,18 @@
 # Definitions of Socio-Economic Indicators
 
+Lower-Layer Super Output Areas (LSOAs)
+- LSOAs are small areas designed to be of a similar population size, with an average of approximately
+1,500 residents or 650 households. 
+- There are 32,844 LSOAs in England. They are a standard
+statistical geography and were produced by the Office for National Statistics for the reporting of
+small area statistics. 
+- LSOAs are referred to as ‘neighbourhoods’ throughout this release.
+
 lsoa11cd: The code for the Lower Layer Super Output Area (LSOA) according to the 2011 census.
-
-lsoa11nm: The name of the LSOA according to the 2011 census.
-
-lsoa11nmw: Possibly the Welsh name for the LSOA, if applicable.
-
-st_areasha: Likely refers to the area of the LSOA in hectares.
-
-st_lengths: Likely refers to the perimeter length of the LSOA.
 
 IMD_Rank: The overall Index of Multiple Deprivation rank for the LSOA.
 
 IMD_Decile: The decile group of the IMD Rank, grouping LSOAs into 10 equal parts based on their deprivation rank.
-
-LSOA01NM: Possibly the name of the LSOA according to an earlier census or dataset.
 
 LADcd: Local Authority District code.
 
@@ -38,11 +36,11 @@ BHSScore, BHSRank, BHSDec: Barriers to Housing and Services score, rank, and dec
 
 EnvScore, EnvRank, EnvDec: Living Environment score, rank, and decile.
 
-IDCScore, IDCRank, IDCDec: Indices of affecting Children score, rank, and decile.
+IDCScore, IDCRank, IDCDec: Income Deprivation Affecting Children
 
-IDOScore, IDORank, IDODec: Indices of affecting Older People score, rank, and decile.
+IDOScore, IDORank, IDODec: Income Deprivation Affecting Older People score, rank, and decile.
 
-CYPScore, CYPRank, CYPDec: Possibly related to Children and Young People's Services.
+CYPScore, CYPRank, CYPDec: Children and Young People's Services.
 
 ASScore, ASRank, ASDec: Adult Skills score, rank, and decile.
 

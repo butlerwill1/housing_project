@@ -1,12 +1,15 @@
 #%%----------------------------------------------------------------------------------------------------
-#                                       Pandas test area
-#%%----------------------------------------------------------------------------------------------------
+#                                       Pandas Test Area
+#----------------------------------------------------------------------------------------------------
 
 import pandas as pd
 import regex as re
 import matplotlib.pyplot as plt
 import veetility
-#%%
+#%%----------------------------------------------------------------------------------------------------
+#                     View the Land registry dataset although too large to work with in pandas
+#------------------------------------------------------------------------------------------------------
+
 land_registry_data = pd.read_csv("land_registry_data.csv")
 # %%
 land_registry_data.columns
@@ -16,7 +19,7 @@ land_registry_data['postcode'].fillna('', inplace=True)
 [postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("EC1V")]
 # %%
 [postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("E32")]
-# %%
+# %% Sample Code for postcode splitting
 postcode = 'E3 2PU'
 
 parts = postcode.split()
@@ -34,25 +37,31 @@ print(district)
 print(sector)
 # %%
 
-# %%
-district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+
 # %%---------------------------------------------------------------------------------------
 #                 Order the dataset by largest % price increase in 2023
 # ---------------------------------------------------------------------------------------
-
-# district_groupby = district_groupby[district_groupby['property_type']=='F']
+# %% Dataset from EMR Cluster groupby aggregation of Land Registry Dataset
+district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+district_groupby = district_groupby[district_groupby['property_type']=='F']
 
 # %%
 # district_groupby = district_groupby[district_groupby['is_london?']!='Outside London']
 # %%
 # district_groupby = district_groupby[district_groupby['year'] >= ]
-# %%  Districts below a certain number of samples
-districts_below_transactions_thresh = district_groupby[district_groupby['num_transactions']<=60]['postcode_district'].unique().tolist()
+# %%  Districts below a certain number of samples, don't include any of their rows
+num_transactions_threshold = 60
+
+districts_below_transactions_thresh = \
+        district_groupby[district_groupby['num_transactions']<=num_transactions_threshold] \
+        ['postcode_district'].unique().tolist()
 # %%
 district_groupby = district_groupby[~district_groupby['postcode_district'].isin(districts_below_transactions_thresh)]
 
 #%% Calculate the 5 year rolling average percentage price rise for the latest year (2023)
-perc_price_rise_2023 = district_groupby[district_groupby['year']==2023][['postcode_district', 'property_type', 'rolling_avg_median_pct_change_5_year']].rename(columns={'rolling_avg_median_pct_change_5_year':'2023_rolling_5_average'})
+perc_price_rise_2023 = district_groupby[district_groupby['year']==2023][\
+        ['postcode_district', 'property_type', 'rolling_avg_median_pct_change_5_year']]. \
+        rename(columns={'rolling_avg_median_pct_change_5_year':'2023_rolling_5_average'})
 
 #%% 
 district_groupby = pd.merge(district_groupby, perc_price_rise_2023, 
@@ -63,7 +72,15 @@ district_groupby.sort_values(['2023_rolling_5_average', 'postcode_district',
                              ascending=[False, True, False], inplace=True)
 
 #%%
-district_groupby.to_csv("District_Ordered_AverageALLYears%.csv")
+district_groupby.to_csv("District_Ordered_Average%.csv")
+
+#%% Create a dataset of how property prices have changed over the years with minimal columns to save memory
+cols = ['postcode_district', 'is_london?', 'property_type','year',
+       'num_transactions','avg_price', '50th_percentile_price']
+
+district_groupby_price_graph = district_groupby[cols]
+
+district_groupby_price_graph.to_csv("district_groupby_price_graph.csv")
 # %%
 plt.title("Average Price of Flat Vs Percentage Change By Postcode District")
 plt.xlabel("Average Price")

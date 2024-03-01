@@ -5,10 +5,14 @@ from pyspark.sql.types import StringType, StructType, StructField
 from pyspark.sql.functions import col, avg, count, expr, year, lag, when
 from pyspark.sql.window import Window
 import re
-import functions as func
+import pyspark_functions as func
 import importlib
 importlib.reload(func)
 import os
+#%% ---------------------------------------------------------------------------------------------------
+#                      Pyspark Code for doing group by aggregations on Land Registry Data
+# -----------------------------------------------------------------------------------------------------
+
 
 # Parameters to assess the quality of a sample of a group of property transactions created when performing a groupby
 sample_quality_params = {
