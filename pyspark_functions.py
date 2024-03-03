@@ -155,29 +155,3 @@ def evaluate_sample_quality(df, params):
                             # (col("skewness_price") <= s) &
     
     return df
-
-
-
-# Function to calculate percentage changes for a given level (area, district, sector)
-# def calculate_pct_change(df, partition_cols):
-
-#     if "year" in partition_cols:
-#         partition_cols.remove("year")
-
-#     # Define the Window specification
-#     windowSpec = Window.partitionBy(partition_cols).orderBy("year")
-    
-#     # 2. Lag Features
-#     for i in [1, 2, 5]:  # Change intervals as needed
-#         df = df.withColumn(f"lag_{i}_year", round(lag("avg_price", i).over(windowSpec),1))
-
-#     # 3. Calculate Percentage Change
-#     for i in [1, 2, 5]:
-#         df = df.withColumn(f"pct_change_{i}_year", 
-#                     (round(col("avg_price") - col(f"lag_{i}_year")) * 100 / col(f"lag_{i}_year"),1))
-
-#     # 4. Handle Missing Values (Optional)
-#     # Fill or filter out missing values as needed
-#     df = df.fillna(0)  # This replaces nulls with 0, adjust as per your requirements
-
-#     return df

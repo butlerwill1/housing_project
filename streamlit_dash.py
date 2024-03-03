@@ -49,11 +49,11 @@ with col1:
                                    default='Greater London')
 
     district_choices = st.multiselect("Select Postcode District", 
-                sorted(district_groupby_socio_economic[district_groupby_socio_economic['is_london?'].isin(london_or_not)]['PostDist'].unique()),
+                                  sorted(district_groupby_socio_economic[district_groupby_socio_economic['is_london?'].isin(london_or_not)]['PostDist'].unique()),
                                   default='E3')
     
-    socio_tooltip_choices = st.multiselect("Select Socio-economic tooltip options for smaller polygons", 
-                sorted(socio_economic.columns),
+    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic tooltip options for smaller polygons", 
+                                    sorted(socio_economic.columns),
                                   default=['AreaName', 'CrimeScore', 'EnvironmentScore', 'OutdoorLivingScore'])
 # %%
 district_groupby_socio_economic = district_groupby_socio_economic[ \
@@ -151,7 +151,7 @@ with col2:
                    options=sorted(district_groupby_socio_economic.property_type), 
                    default='F')
     
-    display_cols = st.multiselect("Select Info Columns", 
+    display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level", 
                    options=sorted(district_groupby_socio_economic.columns), 
                    default=default_display_cols)
     
