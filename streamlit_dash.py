@@ -13,36 +13,39 @@ st.set_page_config(layout="wide")
 #                           Streamlit Dashboard with Map and Price Change Graph
 #-------------------------------------------------------------------------------------------------------
 
-# district_groupby_socio_economic = gpd.read_file('district_groupby_socio_economic.gpkg', layer='socio')
 # Decorate the function with st.cache to only run it once and cache the result
 @st.cache_data()
 def load_district_groupby_socio_economic():
-    # gdf = gpd.read_file("GB_Postcodes/PostalDistrict.shp")
+    """Load the data source which contains the transaction data results by postcode district
+    for 2023 with the 2019 socio economic data aggregated up to the district level joined on."""
     gdf = gpd.read_file('district_groupby_socio_economic.gpkg', layer='socio')
-    # gdf = gdf.to_crs("EPSG:4326")
+
     return gdf
 
 @st.cache_data()
 def load_socio_economic():
+    """Load the 2019 socio-economic dataset with polygons the original smaller area level"""
     socio_economic = gpd.read_file("socio_economic_postcode.gpkg")
 
     return socio_economic
 
 @st.cache_data()
 def load_price_graph():
+    """Load the dataset of the average price of property for every year for each postcode district"""
     price_graph = pd.read_csv("district_groupby_price_graph.csv")
 
     return price_graph
 
-# Call the function to get the GeoDataFrame
 district_groupby_socio_economic = load_district_groupby_socio_economic()
 socio_economic = load_socio_economic()
 price_graph = load_price_graph()
 
 print("Datasets read in")
 #%%
-st.title('Postcode Lottery')
+st.title('UK Property Transaction Dataset With Socio Ecomic Data')
+
 col1, col2 = st.columns(2)
+
 with col1:
     london_or_not = st.multiselect("London Or Outside London?", 
                                    sorted(district_groupby_socio_economic['is_london?'].unique()),
@@ -61,12 +64,6 @@ district_groupby_socio_economic = district_groupby_socio_economic[ \
 
 socio_economic = socio_economic[socio_economic['PostDist'].isin(district_choices)]
 #%%
-# district_groupby_socio_economic_projected = district_groupby_socio_economic.to_crs('EPSG:3857')
-# Now you can calculate the centroid without the warning
-longitude = district_groupby_socio_economic.geometry.centroid.x.mean()
-latitude = district_groupby_socio_economic.geometry.centroid.y.mean()
-
-# geojson = district_groupby_socio_economic.__geo_interface__
 
 # Filter the GeoDataFrame based on the selected districts
 selected_districts = district_groupby_socio_economic[
@@ -104,6 +101,7 @@ postcode_tooltip = GeoJsonTooltip(
     max_width=800,
 )
 
+# Define the tooltip for the lower level socio economic polygons
 socio_tooltip = GeoJsonTooltip(
     fields=socio_tooltip_choices,
     aliases=socio_tooltip_choices,  # this is the label that will be shown in the tooltip
@@ -155,10 +153,12 @@ with col2:
                    options=sorted(district_groupby_socio_economic.columns), 
                    default=default_display_cols)
     
+    # Display a dataframe of the selected metrics for comaprison between districts
     st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['year']==2023][display_cols],
                  use_container_width=True,
                  hide_index=True)
     
+    # Display a graph of how the average price has changed over the years
     price_graph = price_graph[price_graph['postcode_district'].isin(district_choices)]
     price_graph['year'] = pd.to_datetime(price_graph['year'], format='%Y')
 
@@ -172,18 +172,4 @@ with col2:
 
     # Display the chart in the Streamlit app
     st.altair_chart(chart, use_container_width=True)
-# %%
-# Set the viewport for the map
-# viewport = pdk.ViewState(latitude=latitude, 
-#                          longitude=longitude, 
-#                          zoom=10)
-
-# # Create a layer for the polygons
-# layer = pdk.Layer('GeoJsonLayer', 
-#                   data=geojson,
-#                   get_fill_color=[255, 170, 0, 200],  # RGBA color format
-#                   pickable=True)
-
-# # Render the map
-# st.pydeck_chart(pdk.Deck(layers=[layer], initial_view_state=viewport))
 # %%

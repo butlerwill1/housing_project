@@ -23,7 +23,8 @@ postcode_dist_poly = postcode_dist_poly.to_crs("EPSG:4326")
 # Rename the geometry to another column so that you can merge it back later after the aggregation
 postcode_dist_poly['postcode_dist_geometry'] = postcode_dist_poly.geometry
 
-# %% Import socio-economic polygons dataset of Lower layer super output areas. These are smaller than postcode districts
+# %% Import the 2019 socio-economic dataset containing the polygons of Lower layer super output areas. 
+# These are smaller than postcode districts
 # In this dataset, an area with a rank of 1 is the most deprived, and it will have the highest score.
 # E.g. An area with a high crime rate will have a high score
 
@@ -90,17 +91,17 @@ print(f'File Size = {round(os.path.getsize("district_groupby_socio_economic.gpkg
 # %%-----------------------------------------------------------------------------------------------
 #                                                Sample Graphs
 # -------------------------------------------------------------------------------------------------
-test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
-plt.title("Population Density Vs Number of transactions")
-plt.xlabel("Population Density")
-plt.ylabel("Number of Transactions")
+# test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
+# plt.title("Population Density Vs Number of transactions")
+# plt.xlabel("Population Density")
+# plt.ylabel("Number of Transactions")
 
-plt.scatter(test['PopulationDensity'],test['num_transactions'])
-# %%
-test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
-plt.title("CountLowLevelAreas Vs AreaKm2")
-plt.xlabel("CountLowLevelAreas")
-plt.ylabel("AreaKm2")
+# plt.scatter(test['PopulationDensity'],test['num_transactions'])
+# # %%
+# test = district_groupby_socio_economic[(district_groupby_socio_economic['is_london?']!='Outside London')&(district_groupby_socio_economic['property_type']=='F')]
+# plt.title("CountLowLevelAreas Vs AreaKm2")
+# plt.xlabel("CountLowLevelAreas")
+# plt.ylabel("AreaKm2")
 
-plt.scatter(test['CountLowLevelAreas'],test['AreaKm2'])
+# plt.scatter(test['CountLowLevelAreas'],test['AreaKm2'])
 # %%
