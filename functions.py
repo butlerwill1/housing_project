@@ -1,4 +1,5 @@
 import pandas as pd
+import regex as re
 #%% ---------------------------------------------------------------------------------------------------
 #                                   Functions for Pandas operations
 # -----------------------------------------------------------------------------------------------------
@@ -30,6 +31,45 @@ def postcode_socio_grouby_agg(x):
 
 
     return pd.Series(d, index=list(d.keys()))
+
+def check_districts(unique_districts):
+
+    unique_areas = sorted(set([re.sub(r'[^A-Za-z]', '', x) for x in unique_districts]))
+
+
+    for area in unique_areas:
+        incremental_increase = True
+
+        # Find all of the districts for a certain area
+        related_districts = set([district for district in unique_districts if re.sub(r'[^A-Za-z]', '', district) == area])
+
+        # Find all the numbers of that district, e.g. BR1, BR2, BR3 etc = [1, 2, 3]
+        nums_of_districts = [''.join(re.findall(r'\d+',district)) for district in related_districts]
+        
+        # Turn this into an ordered set of integers
+        nums_of_districts = sorted([int(number) for number in nums_of_districts if number != ''])
+
+
+        if len(nums_of_districts) == 0:
+            print(f'There are no District numbers for area {area}')
+            continue
+
+        first_number = nums_of_districts[0]
+
+        if first_number not in [0, 1]:
+            print(f' Districts in Area {area} do not start with 0 or 1: {nums_of_districts}')
+
+        for num in nums_of_districts:
+            if num != first_number:
+                if num != previous_num + 1:
+                    incremental_increase = False
+        
+            previous_num = num
+        
+        if incremental_increase == False:
+            print(f' Districts in Area {area} do not increase incrementally: {nums_of_districts}')
+
+
 
 def clean_socio_columns(column_name):
     

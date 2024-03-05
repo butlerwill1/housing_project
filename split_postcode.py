@@ -50,7 +50,6 @@ output_schema = StructType([
 
 # Define AWS S3 Bucket paths
 parquet_folder_path = "s3a://landregistryproject/land_registry_data.parquet"
-parquet_output_path = "s3a://landregistryproject/land_registry_data_processed.parquet"
 
 # Register the function as a UDF
 split_postcode_udf = udf(func.split_postcode, output_schema)
@@ -61,7 +60,7 @@ df = df.withColumn("postcode_parts", split_postcode_udf(df["postcode"]))
 df = df.select("*", "postcode_parts.*")  # Flatten the struct into separate columns
 
 # Write to Parquet
-df.write.mode("overwrite").parquet(parquet_output_path)
+df.write.mode("overwrite").parquet(parquet_folder_path)
 
 df.show(n=5, truncate=False)
 

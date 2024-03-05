@@ -1,11 +1,13 @@
 #%%----------------------------------------------------------------------------------------------------
 #                                       Pandas Test Area
 #----------------------------------------------------------------------------------------------------
-
 import pandas as pd
 import regex as re
 import matplotlib.pyplot as plt
 import veetility
+import functions as func
+import importlib
+importlib.reload(func)
 #%%----------------------------------------------------------------------------------------------------
 #                     View the Land registry dataset although too large to work with in pandas
 #------------------------------------------------------------------------------------------------------
@@ -19,30 +21,16 @@ land_registry_data['postcode'].fillna('', inplace=True)
 [postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("EC1V")]
 # %%
 [postcode for postcode in land_registry_data['postcode'].unique() if postcode.startswith("E32")]
-# %% Sample Code for postcode splitting
-postcode = 'E3 2PU'
+# %% 
 
-parts = postcode.split()
-area = re.sub(r'[^A-Za-z]', '', parts[0])  # Extracts letters before the space
-district = re.sub(r'[^A-Za-z0-9]', '', parts[0])  # Extracts letters and digits before the space
+district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+district_groupby['postcode_area'] = district_groupby['postcode_district'].apply(lambda x: re.sub(r'[^A-Za-z]', '', x))
 
-# Check if there's a second part for the postcode
-if len(parts) > 1 and parts[1]:
-    sector = district + '-' + parts[1][0]  # Adds the first digit of the second part of the postcode
-else:
-    sector = 'Unknown'
-
-print(area)
-print(district)
-print(sector)
-# %%
-
-
+unique_districts = district_groupby['postcode_district'].unique().tolist()
 # %%---------------------------------------------------------------------------------------
 #                 Order the dataset by largest % price increase in 2023
 # ---------------------------------------------------------------------------------------
-# %% Dataset from EMR Cluster groupby aggregation of Land Registry Dataset
-district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+# 
 district_groupby = district_groupby[district_groupby['property_type']=='F']
 
 # %%
@@ -72,7 +60,7 @@ district_groupby.sort_values(['2023_rolling_5_average', 'postcode_district',
                              ascending=[False, True, False], inplace=True)
 
 #%%
-district_groupby.to_csv("District_Ordered_Average%.csv")
+district_groupby.to_csv("District_Transaction_Groupby%.csv")
 
 #%% Create a dataset of how property prices have changed over the years with minimal columns to save memory
 cols = ['postcode_district', 'is_london?', 'property_type','year',
