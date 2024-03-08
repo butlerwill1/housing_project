@@ -8,7 +8,6 @@ from streamlit_folium import st_folium
 import altair as alt
 import pandas as pd
 st.set_page_config(layout="wide")
-# pdk.settings.mapbox_key = "pk.eyJ1IjoiYnV0bGVyd2lsbDEiLCJhIjoiY2xzeWtkZTRkMGF2NzJsbzJuZnd1NzBybCJ9.tOLsN0JQNHMczznmiPrAuQ"
 #%%-----------------------------------------------------------------------------------------------------
 #                           Streamlit Dashboard with Map and Price Change Graph
 #-------------------------------------------------------------------------------------------------------
@@ -42,7 +41,7 @@ price_graph = load_price_graph()
 
 print("Datasets read in")
 #%%
-st.title('UK Property Transaction Dataset With Socio Ecomic Data')
+st.title('UK Property Transaction Dataset With Socio Economic Data')
 
 col1, col2 = st.columns(2)
 

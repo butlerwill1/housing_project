@@ -18,3 +18,8 @@ district_groupby_socio_economic.gpkg
 district_groupby_socio_economic.gpkg
 socio_economic_postcode.gpkg
 *.gitgnore
+*.tfstate
+*.tfstate.backup
+*.lock.hcl
+terraform-provider-aws_v5.39.1_x5
+.gitignore
