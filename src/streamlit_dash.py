@@ -6,7 +6,7 @@ import geopandas as gpd
 from streamlit_folium import st_folium
 import altair as alt
 import pandas as pd
-import functions as func
+import src.functions as func
 st.set_page_config(layout="wide")
 import branca.colormap as cm
 #%%-----------------------------------------------------------------------------------------------------
@@ -219,6 +219,8 @@ with col2:
         y=alt.Y('AvgPrice:Q', title='Average Price'),  # The ':Q' tells Altair that the data is quantitative
         color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
         tooltip=['PostcodeDistrict:N', 'Year:T', 'AvgPrice:Q', 'NumTransactions:Q']  # Tooltips for interactivity
+    ).properties(
+        title = 'The Change of Average Price of Postcode Districts Over time'
     ).interactive()
 
     # Display the chart in the Streamlit app
@@ -231,8 +233,10 @@ with col2:
         y=alt.Y('NumTransactions:Q', title='Num Transactions'),  # The ':Q' tells Altair that the data is quantitative
         column=alt.Column('PostcodeDistrict:N', title="Postcode District"),
         order=alt.Order('PropertyType:N', sort='ascending'),
-        color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Property Type")),  # Different line for each postcode_district
+        color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
         tooltip=['PostcodeDistrict:N', 'PropertyType:N', 'NumTransactions:Q']  # Tooltips for interactivity
+    ).properties(
+        title = 'Number of Transactions by Property Type and Postcode District'
     ).interactive()
 
     # Display the chart in the Streamlit app
