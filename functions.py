@@ -95,3 +95,26 @@ def clean_socio_columns(column_name):
         column_name = column_name.replace(key, value)
     
     return column_name
+
+def clean_district_columns(columns):
+    column_list = []
+    for column in columns:
+        if column == 'geometry':
+            column_list.append(column)
+            continue
+        
+        if '_' not in column:
+            column = column[0].upper() + column[1:]
+            column_list.append(column)
+            continue
+
+        parts = column.split('_')
+
+        parts_list = []
+
+        for part in parts:
+            parts_list.append(part.title())
+        
+        column_list.append(''.join(parts_list))
+    
+    return column_list

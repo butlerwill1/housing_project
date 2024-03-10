@@ -24,7 +24,7 @@ postcode_dist_poly = postcode_dist_poly.to_crs("EPSG:4326")
 postcode_dist_poly['postcode_dist_geometry'] = postcode_dist_poly.geometry
 
 # %% Import the 2019 socio-economic dataset containing the polygons of Lower layer super output areas. 
-# These are smaller than postcode districts
+# These are smaller than postcode districtsthis
 # In this dataset, an area with a rank of 1 is the most deprived, and it will have the highest score.
 # E.g. An area with a high crime rate will have a high score
 
@@ -49,13 +49,14 @@ socio_economic = socio_economic.to_crs("EPSG:4326")
 postcode_socio_economic = gpd.sjoin(socio_economic, postcode_dist_poly, how='inner', op='within')
 
 #%% Now do a spatial join keeping the geometry of the low level smaller areas of the socio economic data
-# This is used to provide more granualr socio economic insight into the smaller areas, whilst knowing which 
+# This is used to provide more granualar socio economic insight into the smaller areas, whilst knowing which 
 # postcode district each Lower-Layer Super Output Area (LSOA) is in. 
 # The left join ensures that every line of the socio economic is kept
 
 socio_economic_postcode = gpd.sjoin(socio_economic, postcode_dist_poly, how='left', op='within')
 
-socio_economic_postcode.drop(columns=['postcode_dist_geometry']).to_file("socio_economic_postcode.gpkg", layer='socio', driver="GPKG")
+socio_economic_postcode.drop(columns=['postcode_dist_geometry']).\
+    to_file("socio_economic_postcode.gpkg", layer='socio', driver="GPKG", if_exists='replace')
 
 #%% Aggregate the dataset to the postcode level, averaging the Lower-Layer Super Output Areas (LSOAs) up to the 
 # postcode district areas
@@ -84,7 +85,8 @@ district_groupby_socio_economic_gdf = district_groupby_socio_economic_gdf[ \
             (district_groupby_socio_economic_gdf['PostDist'].notna())&
             (district_groupby_socio_economic_gdf['year']==2023)]
 
-district_groupby_socio_economic_gdf.drop(columns=['Unnamed: 0']).to_file("district_groupby_socio_economic.gpkg", layer='socio', driver="GPKG")
+district_groupby_socio_economic_gdf.drop(columns=['Unnamed: 0']).\
+    to_file("district_groupby_socio_economic.gpkg", layer='socio', driver="GPKG", if_exists='replace')
 
 #%%
 print(f'File Size = {round(os.path.getsize("district_groupby_socio_economic.gpkg")/1000000, 2)}Mb')
