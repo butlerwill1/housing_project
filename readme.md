@@ -4,6 +4,8 @@
 
 This project leverages UK Land Registry data, enriching it with socio-economic information by postcode district to generate location based insights. It involves several key components, including Apache Spark Big Data processing, geospatial merging, and visualization through a Streamlit dashboard, aiming to provide a comprehensive understanding of property transaction dynamics in relation to socio-economic factors.
 
+![Example Dashboard Output Of London Postcode District Comparisons](/Images/LondonDistrictsComparison.png)
+
 ## Features
 
 - **Data Processing**: Functions are implemented to clean and prepare the UK Land Registry data for analysis, ensuring quality and consistency.
