@@ -1,4 +1,4 @@
-# UK Land Registry Data Analysis with Socio-Economic Merge
+# UK Land Registry Data Analysis with Socio-Economic Data    Merge
 
 ## Project Overview
 
@@ -10,26 +10,27 @@ This project leverages UK Land Registry data, enriching it with socio-economic i
 
 - **Data Processing**: Functions are implemented to clean and prepare the UK Land Registry data for analysis, ensuring quality and consistency.
 - **Geospatial Merging**: Utilizes geopandas for merging land registry data with socio-economic data on a postcode district level, enabling spatial analysis of socio-economic impacts on property transactions.
-- **PySpark Analytics**: Employs PySpark for efficient processing of large datasets, facilitating complex analytics tasks such as grouping and aggregation by postcode district.
+- **PySpark Analytics**: Employs PySpark for efficient processing of large datasets, facilitating tasks such as grouping and aggregation by postcode district.
 - **Visualization Dashboard**: A Streamlit-based dashboard presents interactive maps and charts, offering users the ability to explore data through various lenses such as price changes, property types, and socio-economic indicators.
 
 ## Data Sources
 
 - **Price Paid HM Land Registry**: Sales prices of properties in England and Wales from 1995. The file is around 5Gb and can be downloaded [here](https://www.gov.uk/government/statistical-data-sets/price-paid-data-downloads) Read more in the LandRegistryDataDoc.md file.
-- **Postcode District Polygons**: Polygons in shapely [files](https://datashare.ed.ac.uk/handle/10283/2597) defining Postcode Areas, Districts and Sectors. From Edinburgh DataShare.
+- **Postcode District Polygons**: Polygons in shapely format defining Postcode Areas, Districts and Sectors can be downloaded
+[here](https://datashare.ed.ac.uk/handle/10283/2597). From Edinburgh DataShare.
 - **English Incides of Deprivation - Socio-economic Data** [Statistics](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019) on relative deprivation in small areas in England. Gives the statistics in a shapely file. Read more in the SocioEconomicDataDoc.md file.
 
 ## Built With
-- **AWS EMR Clusters**
-- **Terraform**
-- **Apache Spark**
-- **Geopandas**
-- **Streamlit**
-- **Folium**
+- **AWS EMR Clusters**: A Cloud Big Data platform for processing massive amounts of data which can host big data software technologies such as Apache Spark 
+- **Terraform**: An Infrastructure as Code (IaC) technology used as a clear and convinient way to create a AWS EMR Cluster
+- **Apache Spark**: An open source programming interface for big data tasks which manipulates a cluster of computers and distributed datasets to process a large amount of data
+- **Geopandas**: A python library similar to pandas but also has "shapely" technology for manipulation of geometric objects and "PyProj" for projection and coordinate transformations
+- **Streamlit**: A python dashboarding technology with interactive filters, buttons, widgets, maps, tables and more.
+- **Folium**: A python library for making interactive data visualisations on maps utilising Leaflet.js
 
-## Each Code File Explanation
+## Code File Explanations
 - **functions.py**: Provides foundational utility functions for data cleaning, aggregation, and preprocessing. It's used across various scripts for consistent data manipulation tasks.
-- **pyspark_functions.py**: Defines PySpark functions for processing large datasets, including splitting postcodes, calculating statistical measures, and evaluating sample quality. It supports complex data transformations and analyses, such as calculating price changes and rolling averages.
+- **pyspark_functions.py**: Defines PySpark functions for processing large datasets, including splitting postcodes, calculating statistical measures of variation, and evaluating sample quality. It supports complex data transformations and analyses, such as calculating price changes and rolling averages.
 - **preprocessing_qa.py**: Focused on quality assurance for land registry and socio-economic datasets, this script identifies and addresses missing or inaccurate data. It validates postcodes, prices, and dates in the land registry data and checks for invalid geometries in geospatial datasets. The script ensures data integrity before further processing and analysis.
 - **transaction_groupby.py**: Utilizes PySpark to aggregate land registry data by geographical levels, applying quality metrics to ensure data reliability. It calculates average prices and percentage price changes, filtering the data based on quality criteria. The script exports processed datasets for further analysis or visualization, serving as a foundational step in the data workflow.
 - **qa_groupby_data.py**: Performs quality assurance on the grouped transaction data and prepares it for analysis or visualization. It filters the transaction data by property type and postcode districts that have enough transactions for a significant sample size. The script exports cleaned and processed data for visualization, especially in the Streamlit dashboard.
