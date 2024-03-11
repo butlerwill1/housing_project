@@ -2,7 +2,7 @@
 import geopandas as gpd
 import pandas as pd
 import matplotlib.pyplot as plt
-import src.functions as func
+import functions as func
 import importlib
 import os
 importlib.reload(func)
