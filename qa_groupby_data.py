@@ -4,14 +4,13 @@
 import pandas as pd
 import regex as re
 import matplotlib.pyplot as plt
-import veetility
-import src.functions as func
+import functions as func
 import importlib
 importlib.reload(func)
 
 # %% 
 
-district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+district_groupby = pd.read_csv("District_Transaction_Groupby%.csv")
 district_groupby['postcode_area'] = district_groupby['postcode_district'].apply(lambda x: re.sub(r'[^A-Za-z]', '', x))
 
 prop_type_dict = {'T':'Terraced', 'S':'Semi-Detached', 'D':'Detached', 'F':'Flat', 'O':'Other'}

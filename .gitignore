@@ -19,3 +19,6 @@ terraform-provider-aws_v5.39.1_x5
 gitignore
 OutputFiles
 land_registry_data.csv
+district_groupby_socio_economic.gpkg
+socio_economic_postcode.gpkg
+District_Transaction_Groupby%.csv

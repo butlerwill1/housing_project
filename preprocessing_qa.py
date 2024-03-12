@@ -36,7 +36,7 @@ land_registry_data['date_transfer'].isna().sum()
 #%%----------------------------------------------------------------------------------------------------
 #                     QA the Transaction Dataset returned from the Pyspark Processes
 #------------------------------------------------------------------------------------------------------
-district_groupby = pd.read_csv("District_Prop_Type_Groupby.csv")
+district_groupby = pd.read_csv("District_Transaction_Groupby.csv")
 
 # Checking the postcode districts have actual numbers and that the numbers start from
 # 0 or 1 and increase by 1 each time, e.g. BR1, BR2, BR3

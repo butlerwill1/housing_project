@@ -83,7 +83,15 @@ district_groupby_socio_economic_gdf = gpd.GeoDataFrame(district_groupby_socio_ec
 
 district_groupby_socio_economic_gdf = district_groupby_socio_economic_gdf[ \
             (district_groupby_socio_economic_gdf['PostDist'].notna())&
-            (district_groupby_socio_economic_gdf['year']==2023)]
+            (district_groupby_socio_economic_gdf['year']==2023)&
+            (district_groupby_socio_economic_gdf['PostDist']!='Unknown')]
+#%%
+cols = ['postcode_district', 'is_london?', 'property_type',
+       'year', 'num_transactions', 'avg_price',  '50th_percentile_price',
+       'postcode_area', '5YearAvg%PriceInc', 'PostDist', 'geometry',
+       'AreaName',  'Population','PopulationDensity', 'OverallAvg',
+       'IncomeAvg',
+       'EducationAvg', 'CrimeAvg', 'EnvironmentAvg', 'GeographicalBarriersAvg', 'IndoorLivingAvg']
 
 district_groupby_socio_economic_gdf.drop(columns=['Unnamed: 0']).\
     to_file("district_groupby_socio_economic.gpkg", layer='socio', driver="GPKG", if_exists='replace')
