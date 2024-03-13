@@ -64,7 +64,9 @@ def apply_style(feature):
 
 #%%
 st.title('London Property Transaction Dataset With Socio Economic Data')
-
+st.markdown(f"[GitHub repo with explanation documents](https://github.com/butlerwill1/housing_project) -- \
+            The higher the socio-economic score the worse things are, e.g. a high crime score means there is a lot of crime, \
+            a high education score means there is problems with educational deprivation", unsafe_allow_html=True)
 col1, col2 = st.columns(2)
 
 with col1:
@@ -84,18 +86,18 @@ with col1:
         map_state = st.selectbox("Select Map Usage", ['Area Investigation with Lower Level', 'Choropleth'])
     
     with col1B:
-        choropleth_variable = st.selectbox("Pick a numerical value to vary the choropleth",\
+        choropleth_variable = st.selectbox("If Map type is Choropleth, select which variable to use",\
                                            sorted(district_groupby_socio_economic.select_dtypes(include=['number']).columns))
 
     if map_state == 'Area Investigation with Lower Level':
         
-        district_choices = st.multiselect("Select Postcode District", 
+        district_choices = st.multiselect("Select Postcode Districts", 
                                   sorted(district_groupby_socio_economic[district_groupby_socio_economic['IsLondon?'].isin(london_or_not)]['PostDist'].unique()),
                                   default='E3')
     elif map_state == 'Choropleth':
         district_choices = district_groupby_socio_economic[district_groupby_socio_economic['IsLondon?'].isin(london_or_not)]['PostDist'].unique()
 
-    num_transactions_threshold = st.slider("Minimum Number of Transactions (sample size) for a Year")
+    num_transactions_threshold = st.slider("Select the Number of Transactions that is considered a good sample size for a Year")
     # Define a linear color scale
     linear = cm.linear.YlGnBu_09.scale(district_groupby_socio_economic[choropleth_variable].min(), 
                                     district_groupby_socio_economic[choropleth_variable].max())
@@ -203,6 +205,7 @@ with col1:
         st_folium(m, width=700)
 
         with col2:
+            st.subheader("Comparison Table")
             # Display a dataframe of the selected metrics for comaprison between districts
             st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['Year']==2023][display_cols],
                         use_container_width=True,
@@ -220,7 +223,7 @@ with col1:
                 color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
                 tooltip=['PostcodeDistrict:N', 'Year:T', 'AvgPrice:Q', 'NumTransactions:Q']  # Tooltips for interactivity
             ).properties(
-                title = 'The Change of Average Price of Postcode Districts Over time'
+                title = 'Change of Average Price of Postcode Districts Over time'
             ).interactive()
 
             # Display the chart in the Streamlit app
