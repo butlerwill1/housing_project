@@ -193,8 +193,8 @@ with col1:
                 'color': 'rgba(255, 0, 0, 0.8)',       # Outline color, you can adjust as needed
                 'weight': 1,                            # Outline weight, you can adjust as needed
                 'fillOpacity': 0.5                      # Adjust fill opacity here as well
-            }#,
-            # tooltip=socio_tooltip
+            },
+            tooltip=socio_tooltip
         ).add_to(m)
     #%%
     st_folium(m, width=700)
