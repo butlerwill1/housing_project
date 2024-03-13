@@ -197,7 +197,10 @@ with col1:
             tooltip=socio_tooltip
         ).add_to(m)
     #%%
-    st_folium(m, width=700)
+    if len(district_choices) == 0:
+        st.text("A District must be selected for the map to display")
+    else:
+        st_folium(m, width=700)
 
 with col2:
     # Display a dataframe of the selected metrics for comaprison between districts
