@@ -118,127 +118,127 @@ with col1:
     selected_districts = district_groupby_socio_economic[
         district_groupby_socio_economic['PostDist'].isin(district_choices)
     ]
-
-    # Calculate the bounds of the selected polygons
-    bounds = selected_districts.geometry.total_bounds
-    minx, miny, maxx, maxy = bounds
-
-    # Calculate the center of the bounds
-    center = [(miny + maxy) / 2, (minx + maxx) / 2]
-
-    # Initialize the map at the center of the bounds
-    m = folium.Map(location=center)
-
-    # Fit the map to the bounds
-    m.fit_bounds([[miny, minx], [maxy, maxx]])
-
-    default_display_cols = ['PostcodeDistrict', 'AvgPrice', '5YearAvg%PriceInc', 'CrimeAvg']
-
-#%%
-    with col2:
-        property_type = st.multiselect("Select Property Type", 
-                    options=sorted(district_groupby_socio_economic.PropertyType), 
-                    default='Flat')
-        
-        display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level", 
-                    options=sorted(district_groupby_socio_economic.columns), 
-                    default=default_display_cols)
-
-    # Define the tooltip for the postcode district level polygons
-    postcode_tooltip = GeoJsonTooltip(
-        fields=display_cols,
-        aliases=display_cols,  # this is the label that will be shown in the tooltip
-        localize=True,
-        sticky=False,  # Set to True for the tooltip to follow the mouse
-        labels=True,
-        style="""
-            background-color: #F0EFEF;
-            border: 2px solid black;
-            border-radius: 3px;
-            box-shadow: 3px;
-        """,
-        max_width=800,
-    )
-    #%%
-    # Define the tooltip for the lower level socio economic polygons
-    socio_tooltip = GeoJsonTooltip(
-        fields=socio_tooltip_choices,
-        aliases=socio_tooltip_choices,  # this is the label that will be shown in the tooltip
-        localize=True,
-        sticky=False,  # Set to True for the tooltip to follow the mouse
-        labels=True,
-        style="""
-            background-color: #F0EFEF;
-            border: 2px solid black;
-            border-radius: 3px;
-            box-shadow: 3px;
-        """,
-        max_width=800,
-    )
-
-    # Add the postcode district level polygons
-    GeoJson(
-        district_groupby_socio_economic,
-        style_function=apply_style,  # Transparent polygons
-        tooltip=postcode_tooltip
-    ).add_to(m)
-
-    #%%
-    # Add the socio_economic dataset smaller polygons (the ones that fit within the postcode district)
-    if map_state == 'Area Investigation with Lower Level':
-        GeoJson(
-            socio_economic,
-            style_function=lambda x: {
-                'fillColor': 'rgba(255, 0, 0, 0.5)',  # Semi-transparent red
-                'color': 'rgba(255, 0, 0, 0.8)',       # Outline color, you can adjust as needed
-                'weight': 1,                            # Outline weight, you can adjust as needed
-                'fillOpacity': 0.5                      # Adjust fill opacity here as well
-            },
-            tooltip=socio_tooltip
-        ).add_to(m)
-    #%%
     if len(district_choices) == 0:
-        st.text("A District must be selected for the map to display")
+        st.warning("A District must be selected for the map to display")
     else:
+        # Calculate the bounds of the selected polygons
+        bounds = selected_districts.geometry.total_bounds
+        minx, miny, maxx, maxy = bounds
+
+        # Calculate the center of the bounds
+        center = [(miny + maxy) / 2, (minx + maxx) / 2]
+
+        # Initialize the map at the center of the bounds
+        m = folium.Map(location=center)
+
+        # Fit the map to the bounds
+        m.fit_bounds([[miny, minx], [maxy, maxx]])
+
+        default_display_cols = ['PostcodeDistrict', 'AvgPrice', '5YearAvg%PriceInc', 'CrimeAvg']
+
+    #%%
+        with col2:
+            property_type = st.multiselect("Select Property Type", 
+                        options=sorted(district_groupby_socio_economic.PropertyType), 
+                        default='Flat')
+            
+            display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level", 
+                        options=sorted(district_groupby_socio_economic.columns), 
+                        default=default_display_cols)
+
+        # Define the tooltip for the postcode district level polygons
+        postcode_tooltip = GeoJsonTooltip(
+            fields=display_cols,
+            aliases=display_cols,  # this is the label that will be shown in the tooltip
+            localize=True,
+            sticky=False,  # Set to True for the tooltip to follow the mouse
+            labels=True,
+            style="""
+                background-color: #F0EFEF;
+                border: 2px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+            """,
+            max_width=800,
+        )
+        #%%
+        # Define the tooltip for the lower level socio economic polygons
+        socio_tooltip = GeoJsonTooltip(
+            fields=socio_tooltip_choices,
+            aliases=socio_tooltip_choices,  # this is the label that will be shown in the tooltip
+            localize=True,
+            sticky=False,  # Set to True for the tooltip to follow the mouse
+            labels=True,
+            style="""
+                background-color: #F0EFEF;
+                border: 2px solid black;
+                border-radius: 3px;
+                box-shadow: 3px;
+            """,
+            max_width=800,
+        )
+
+        # Add the postcode district level polygons
+        GeoJson(
+            district_groupby_socio_economic,
+            style_function=apply_style,  # Transparent polygons
+            tooltip=postcode_tooltip
+        ).add_to(m)
+
+        #%%
+        # Add the socio_economic dataset smaller polygons (the ones that fit within the postcode district)
+        if map_state == 'Area Investigation with Lower Level':
+            GeoJson(
+                socio_economic,
+                style_function=lambda x: {
+                    'fillColor': 'rgba(255, 0, 0, 0.5)',  # Semi-transparent red
+                    'color': 'rgba(255, 0, 0, 0.8)',       # Outline color, you can adjust as needed
+                    'weight': 1,                            # Outline weight, you can adjust as needed
+                    'fillOpacity': 0.5                      # Adjust fill opacity here as well
+                },
+                tooltip=socio_tooltip
+            ).add_to(m)
+    #%%
+    
         st_folium(m, width=700)
 
-with col2:
-    # Display a dataframe of the selected metrics for comaprison between districts
-    st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['Year']==2023][display_cols],
-                 use_container_width=True,
-                 hide_index=True)
-    
-    # Display a graph of how the average price has changed over the years
-    price_graph = price_graph[price_graph['PostcodeDistrict'].isin(district_choices)]
-    price_graph['Year'] = pd.to_datetime(price_graph['Year'], format='%Y')
+        with col2:
+            # Display a dataframe of the selected metrics for comaprison between districts
+            st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['Year']==2023][display_cols],
+                        use_container_width=True,
+                        hide_index=True)
+            
+            # Display a graph of how the average price has changed over the years
+            price_graph = price_graph[price_graph['PostcodeDistrict'].isin(district_choices)]
+            price_graph['Year'] = pd.to_datetime(price_graph['Year'], format='%Y')
 
-    
-    # Create an interactive line chart
-    chart = alt.Chart(price_graph).mark_line().encode(
-        x='Year:T',  # The ':T' tells Altair that the data is temporal
-        y=alt.Y('AvgPrice:Q', title='Average Price'),  # The ':Q' tells Altair that the data is quantitative
-        color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
-        tooltip=['PostcodeDistrict:N', 'Year:T', 'AvgPrice:Q', 'NumTransactions:Q']  # Tooltips for interactivity
-    ).properties(
-        title = 'The Change of Average Price of Postcode Districts Over time'
-    ).interactive()
+            
+            # Create an interactive line chart
+            chart = alt.Chart(price_graph).mark_line().encode(
+                x='Year:T',  # The ':T' tells Altair that the data is temporal
+                y=alt.Y('AvgPrice:Q', title='Average Price'),  # The ':Q' tells Altair that the data is quantitative
+                color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
+                tooltip=['PostcodeDistrict:N', 'Year:T', 'AvgPrice:Q', 'NumTransactions:Q']  # Tooltips for interactivity
+            ).properties(
+                title = 'The Change of Average Price of Postcode Districts Over time'
+            ).interactive()
 
-    # Display the chart in the Streamlit app
-    st.altair_chart(chart, use_container_width=True)
+            # Display the chart in the Streamlit app
+            st.altair_chart(chart, use_container_width=True)
 
-    property_type_groupby = property_type_groupby[property_type_groupby['PostcodeDistrict'].isin(district_choices)]
-    # Create an interactive line chart
-    property_type_chart = alt.Chart(property_type_groupby).mark_bar().encode(
-        x=alt.X('PropertyType:N', title='Property Type'),
-        y=alt.Y('NumTransactions:Q', title='Num Transactions'),  # The ':Q' tells Altair that the data is quantitative
-        column=alt.Column('PostcodeDistrict:N', title="Postcode District"),
-        order=alt.Order('PropertyType:N', sort='ascending'),
-        color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
-        tooltip=['PostcodeDistrict:N', 'PropertyType:N', 'NumTransactions:Q']  # Tooltips for interactivity
-    ).properties(
-        title = 'Number of Transactions by Property Type and Postcode District'
-    ).interactive()
+            property_type_groupby = property_type_groupby[property_type_groupby['PostcodeDistrict'].isin(district_choices)]
+            # Create an interactive line chart
+            property_type_chart = alt.Chart(property_type_groupby).mark_bar().encode(
+                x=alt.X('PropertyType:N', title='Property Type'),
+                y=alt.Y('NumTransactions:Q', title='Num Transactions'),  # The ':Q' tells Altair that the data is quantitative
+                column=alt.Column('PostcodeDistrict:N', title="Postcode District"),
+                order=alt.Order('PropertyType:N', sort='ascending'),
+                color=alt.Color('PostcodeDistrict:N', legend=alt.Legend(title="Postcode District")),  # Different line for each postcode_district
+                tooltip=['PostcodeDistrict:N', 'PropertyType:N', 'NumTransactions:Q']  # Tooltips for interactivity
+            ).properties(
+                title = 'Number of Transactions by Property Type and Postcode District'
+            ).interactive()
 
-    # Display the chart in the Streamlit app
-    st.altair_chart(property_type_chart)
+            # Display the chart in the Streamlit app
+            st.altair_chart(property_type_chart)
 # %%
