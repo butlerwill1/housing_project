@@ -34,7 +34,6 @@ print(socio_economic.crs)
 # Rename the columns of the dataset from Abbreviations to be more understandable
 renaming_dict = {col: func.clean_socio_columns(col) for col in socio_economic.columns}
 renaming_dict['lsoa11nmw'] = 'AreaName'
-
               
 socio_economic = socio_economic.rename(columns=renaming_dict)
 socio_economic = socio_economic.rename(columns={'OverallRank0': 'OverallRank'})
@@ -115,3 +114,14 @@ print(f'File Size = {round(os.path.getsize("district_groupby_socio_economic.gpkg
 
 # plt.scatter(test['CountLowLevelAreas'],test['AreaKm2'])
 # %%
+socio_economic_reduced_cols = ['AreaName', 
+       'Overall_Rank', 
+       'IncomeScore',
+       'EmploymentScore', 'EducationScore', 
+       'HealthScore', 'CrimeScore', 'HousingBarriersScore', 'EnvironmentScore','IncomeDeprChildrenScore', 'IncomeDeprOlderScore', 'IncomeDeprOlderRank',
+       'IncomeDeprOlderDec', 'Services4YoungScore', 'AdultSkillsScore', 'GeographicalBarriersScore',
+       'WiderBarriersScore', 
+       'IndoorLivingScore', 
+       'OutdoorLivingScore', 'TotPop', 'Pop16_59', 'Pop60+', 'WorkPop', 'geometry', 'index_right',
+       'DistID', 'PostDist', 'PostArea',
+       'AreaKm2']
