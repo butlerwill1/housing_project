@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-This project leverages UK Land Registry data, enriching it with socio-economic information by postcode district to generate location based insights. It involves several key components, including Apache Spark Big Data processing, geospatial merging, and visualization through a Streamlit dashboard, aiming to provide a comprehensive understanding of property transaction dynamics in relation to socio-economic factors.
+This project leverages UK Land Registry data, grouping it by postcode district (e.g. SW11, E3) and then enriching it with socio-economic data from 2019 to generate location based insights. The socioeconomic data is segmented into areas smaller than a postcode district, so the postcode district that the smaller areas reside within is found and then aggregated up to form socio-economic insights for the whole district. For example,aggregations on teh transaction dataset can tell us the average price for flats in SW11 in 2023, and the socio-economic data can tell us 
 
 ![Example Dashboard Output Of London Postcode District Comparisons](/Images/LondonDistrictsComparison.png)
 

@@ -63,8 +63,8 @@ def apply_style(feature):
         return {'fillColor': '#ffffff00', 'color': 'rgba(0, 0, 0, 0.6)', 'dashArray': '4, 3',  'weight': 2}
 
 #%%
-st.title('London Property Transaction Dataset With Socio Economic Data')
-st.markdown(f"[GitHub repo with explanation documents](https://github.com/butlerwill1/housing_project) -- \
+st.title('London Flat Transaction Dataset With Socio Economic Data')
+st.markdown(f"[GitHub repo with explanation documents](https://github.com/butlerwill1/housing_project/blob/main/readme.md) -- \
             The higher the socio-economic score the worse things are, e.g. a high crime score means there is a lot of crime, \
             a high education score means there is problems with educational deprivation", unsafe_allow_html=True)
 col1, col2 = st.columns(2)
@@ -76,7 +76,7 @@ with col1:
 
     
     
-    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic tooltip options for smaller polygons", 
+    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic tooltip options (th)", 
                                     sorted(socio_economic.columns),
                                   default=['AreaName'])
     
