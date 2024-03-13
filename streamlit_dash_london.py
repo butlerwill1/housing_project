@@ -64,21 +64,23 @@ def apply_style(feature):
 
 #%%
 st.title('London Flat Transaction Dataset With Socio Economic Data')
-st.markdown(f"[GitHub repo with explanation documents](https://github.com/butlerwill1/housing_project/blob/main/readme.md) -- \
-            The higher the socio-economic score the worse things are, e.g. a high crime score means there is a lot of crime, \
-            a high education score means there is problems with educational deprivation", unsafe_allow_html=True)
+st.markdown(f"[GitHub ReadMe](https://github.com/butlerwill1/housing_project/blob/main/readme.md) - \
+            [Socio-economic data explanation](https://github.com/butlerwill1/housing_project/blob/main/Supporting%20Documents/SocioEconomicDataDoc.md) - \
+            [Land Registry data explanation](https://github.com/butlerwill1/housing_project/blob/main/Supporting%20Documents/LandRegistryDataDoc.md)", unsafe_allow_html=True)
+
+st.markdown("The higher the socio-economic score the worse things are, e.g. a high crime score means there is a lot of crime, \
+            a high education score means there are problems with educational deprivation")
+st.markdown("The socio economic data was measured on smaller geographic areas than a postcode district. These are the areas in red on the map. \
+            Hover over these areas to reveal a tooltip showing stats about that area you can select in the select box below")
+st.divider()
+
 col1, col2 = st.columns(2)
 
 with col1:
-    london_or_not = st.multiselect("London Or Outside London?", 
-                                   sorted(district_groupby_socio_economic['IsLondon?'].unique()),
-                                   default='Greater London')
-
     
-    
-    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic tooltip options (th)", 
+    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic data you want adding to the tooltip (red areas)", 
                                     sorted(socio_economic.columns),
-                                  default=['AreaName'])
+                                  default=['AreaName', 'CrimeScore', 'EnvironmentScore'])
     
     col1A, col1B = st.columns(2)
 
@@ -92,10 +94,10 @@ with col1:
     if map_state == 'Area Investigation with Lower Level':
         
         district_choices = st.multiselect("Select Postcode Districts", 
-                                  sorted(district_groupby_socio_economic[district_groupby_socio_economic['IsLondon?'].isin(london_or_not)]['PostDist'].unique()),
+                                  sorted(district_groupby_socio_economic['PostDist'].unique()),
                                   default='E3')
     elif map_state == 'Choropleth':
-        district_choices = district_groupby_socio_economic[district_groupby_socio_economic['IsLondon?'].isin(london_or_not)]['PostDist'].unique()
+        district_choices = district_groupby_socio_economic['PostDist'].unique()
 
     num_transactions_threshold = st.slider("Select the Number of Transactions that is considered a good sample size for a Year")
     # Define a linear color scale
@@ -140,11 +142,8 @@ with col1:
 
     #%%
         with col2:
-            property_type = st.multiselect("Select Property Type", 
-                        options=sorted(district_groupby_socio_economic.PropertyType), 
-                        default='Flat')
             
-            display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level", 
+            display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level (black dotted line areas)", 
                         options=sorted(district_groupby_socio_economic.columns), 
                         default=default_display_cols)
 

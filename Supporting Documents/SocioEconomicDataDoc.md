@@ -1,6 +1,7 @@
 # Socio-Economic Indicators
 
 [Link to Dataset](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019)
+
 **This dataset was produced at Lower-Layer Super Output Areas (LSOAs), These are significantly smaller than a postcode district like SW11**
 
 - LSOAs are small areas designed to be of a similar population size, with an average of approximately
@@ -11,11 +12,6 @@ small area statistics.
 - LSOAs are referred to as ‘neighbourhoods’ throughout this release.
 
 ## Definitions
-lsoa11cd = The code for the Lower Layer Super Output Area (LSOA) according to the 2011 census.
-
-LADcd = Local Authority District code.
-
-LADnm = Local Authority District name.
 
 IMDScore = The overall Score of Multiple Deprivation indicators, a composite measure of deprivation detailed at the bottom
 
@@ -49,6 +45,12 @@ IndScore = Indoor Living Environment social deprivation score, measures the qual
 
 OutScore = Outdoor Living Environment social deprivation score, contains measures of air quality and road traffic accidents.
 
+lsoa11cd = The code for the Lower Layer Super Output Area (LSOA) according to the 2011 census.
+
+LADcd = Local Authority District code.
+
+LADnm = Local Authority District name.
+
 TotPop = Total population within the LSOA. 
 
 DepChi = The number of dependent children.
@@ -70,3 +72,5 @@ measure of deprivation. The domains are combined using the following weights:
 - Crime (9.3%)
 - Barriers to Housing and Services (9.3%)
 - Living Environment Deprivation (9.3%)
+
+https://dclgapps.communities.gov.uk/imd/iod_index.html#
