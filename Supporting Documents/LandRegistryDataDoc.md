@@ -15,11 +15,6 @@ AvgPrice = The average price of a property for that district, year etc
 - Postcode = This is the postcode used at the time of the original transaction. Note that postcodes can be reallocated and these changes are not reflected in the Price Paid Dataset.
 - Property Type: D = Detached, S = Semi-Detached, T = Terraced, F = Flats/Maisonettes, O = Other
 
-Note that:
-- we only record the above categories to describe property type, we do not separately identify bungalows
-- end-of-terrace properties are included in the Terraced category above
-- ‘Other’ is only valid where the transaction relates to a property type that is not covered by existing values, for example where a property comprises more than one large parcel of land
-
 - Old/New = Indicates the age of the property and applies to all price paid transactions, residential and non-residential. Y = a newly built property, N = an established residential building
 
 - Duration = Relates to the tenure: F = Freehold, L= Leasehold etc.
@@ -53,3 +48,8 @@ C = Change
 D = Delete
 
 Note that where a transaction changes category type due to misallocation (as above) it will be deleted from the original category type and added to the correct category with a new transaction unique identifier.
+
+Property Type Notes
+    - we only record the above categories to describe property type, we do not separately identify bungalows
+    - end-of-terrace properties are included in the Terraced category above
+    - ‘Other’ is only valid where the transaction relates to a property type that is not covered by existing values, for example where a property comprises more than one large parcel of land

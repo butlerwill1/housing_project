@@ -143,7 +143,7 @@ with col1:
     #%%
         with col2:
             
-            display_cols = st.multiselect("Select Info Columns For Socio Economic Data Aggregated to Postcode District Level (black dotted line areas)", 
+            display_cols = st.multiselect("Select Columns for Socio-economic Data at the Postcode District Level (black dotted line areas)", 
                         options=sorted(district_groupby_socio_economic.columns), 
                         default=default_display_cols)
 

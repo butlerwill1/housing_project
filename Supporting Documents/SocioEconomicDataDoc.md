@@ -2,7 +2,7 @@
 
 [Link to Dataset](https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019)
 
-**This dataset was produced at Lower-Layer Super Output Areas (LSOAs), These are significantly smaller than a postcode district like SW11**
+**This dataset was produced at Lower-Layer Super Output Areas (LSOAs), these are significantly smaller than a postcode district like SW11**
 
 - LSOAs are small areas designed to be of a similar population size, with an average of approximately
 1,500 residents or 650 households. 
@@ -13,37 +13,39 @@ small area statistics.
 
 ## Definitions
 
-IMDScore = The overall Score of Multiple Deprivation indicators, a composite measure of deprivation detailed at the bottom
+**The higher the scores the higher the level of deprivation**
 
-IncScore = Income based social deprivation score, encludes people both out of work and people in work but on low earnings
+IMDScore (OverallScore) = The overall Score of Multiple Deprivation indicators, a composite measure of deprivation detailed at the bottom
 
-EmpScore = Employment based social deprivation score
+IncScore (IncomeScore) = Income based social deprivation score, encludes people both out of work and people in work but on low earnings
 
-EduScore = Education, Skills, and Training social deprivation score
+EmpScore (EmploymentScore) = Employment based social deprivation score, measures the proportion of the working age population involuntarily excluded from the labour market
 
-HDDScore = Health and Disability score.
+EduScore (EducationScore) = Education, Skills, and Training social deprivation score
 
-CriScore = Crime based social deprivation score, the higher the score, the more crime
+HDDScore (HealthScore) = Health and Disability social deprivation score, measures the risk of premature death and the impairment of quality of life through poor physical or mental health 
 
-BHSScore = Barriers to Housing and Services social deprivation score, physical and financial
+CriScore (CrimeScore) = Crime based social deprivation score
 
-EnvScore = Living Environment social deprivation score, the quality of the local environment, parks etc
+BHSScore (HousingBarriersScore)= Barriers to Housing and Services social deprivation score, physical and financial
 
-IDCScore = Income Deprivation Affecting Children social deprivation score
+EnvScore (EnvironmentScore) = Living Environment social deprivation score, the quality of the local environment, parks etc
 
-IDOScore = Income Deprivation Affecting Older People social deprivation score
+IDCScore (IncomeDeprChildrenScore) = Income Deprivation Affecting Children social deprivation score
 
-CYPScore = Children and Young People's Services social deprivation score
+IDOScore (IncomeDeprOlderScore) = Income Deprivation Affecting Older People social deprivation score
 
-ASScore = Adult Skills social deprivation score
+CYPScore (Services4YoungScore) = Children and Young People's Services social deprivation score
 
-GBScore = Geographical Barriers social deprivation score, which relate to the physical proximity of local services
+ASScore (AdultSkillsScore) = Adult Skills social deprivation score
 
-WBScore = Wider Barriers social deprivation score, includes issues relating to access to housing such as affordability and homelessness. 
+GBScore (GeographicalBarriersScore) = Geographical Barriers social deprivation score, which relate to the physical proximity of local services
 
-IndScore = Indoor Living Environment social deprivation score, measures the quality of housing
+WBScore (WiderBarriersScore) = Wider Barriers social deprivation score, includes issues relating to access to housing such as affordability and homelessness. 
 
-OutScore = Outdoor Living Environment social deprivation score, contains measures of air quality and road traffic accidents.
+IndScore (IndoorScore) = Indoor Living Environment social deprivation score, measures the quality of housing
+
+OutScore (OutdoorScore) = Outdoor Living Environment social deprivation score, contains measures of air quality and road traffic accidents.
 
 lsoa11cd = The code for the Lower Layer Super Output Area (LSOA) according to the 2011 census.
 
