@@ -113,9 +113,6 @@ with col1:
 
     district_groupby_socio_economic = district_groupby_socio_economic[~district_groupby_socio_economic['PostcodeDistrict'].isin(districts_below_transactions_thresh)]
 
-    district_groupby_socio_economic = district_groupby_socio_economic[ \
-                            district_groupby_socio_economic['PostDist'].isin(district_choices)]
-
     socio_economic = socio_economic[socio_economic['PostDist'].isin(district_choices)]
 
     # Filter the GeoDataFrame based on the selected districts
@@ -206,7 +203,7 @@ with col1:
         with col2:
             st.subheader("Comparison Table")
             # Display a dataframe of the selected metrics for comaprison between districts
-            st.dataframe(district_groupby_socio_economic[district_groupby_socio_economic['Year']==2023][display_cols],
+            st.dataframe(selected_districts[selected_districts['Year']==2023][display_cols],
                         use_container_width=True,
                         hide_index=True)
             
@@ -243,4 +240,17 @@ with col1:
 
             # Display the chart in the Streamlit app
             st.altair_chart(property_type_chart)
+
+            st.subheader("Customisable Scatterplot of District")
+            x_choice = st.selectbox("Choose the X axis variable", sorted(district_groupby_socio_economic.columns))
+            y_choice = st.selectbox("Choose the Y axis variable", sorted(district_groupby_socio_economic.columns))
+            
+            scatter_plot = alt.Chart(district_groupby_socio_economic.drop(columns='geometry')).mark_circle(size=60).encode(
+            x=x_choice,
+            y=y_choice,
+            tooltip=['PostDist', x_choice, y_choice]  # Add more columns if needed
+            ).interactive()
+
+            # Display the chart in Streamlit
+            st.altair_chart(scatter_plot, use_container_width=True)
 # %%
