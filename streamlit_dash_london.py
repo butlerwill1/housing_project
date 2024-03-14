@@ -68,17 +68,19 @@ st.markdown(f"[GitHub ReadMe](https://github.com/butlerwill1/housing_project/blo
             [Socio-economic data explanation](https://github.com/butlerwill1/housing_project/blob/main/Supporting%20Documents/SocioEconomicDataDoc.md) - \
             [Land Registry data explanation](https://github.com/butlerwill1/housing_project/blob/main/Supporting%20Documents/LandRegistryDataDoc.md)", unsafe_allow_html=True)
 
-st.markdown("The higher the socio-economic score the worse things are, e.g. a high crime score means there is a lot of crime, \
-            a high education score means there are problems with educational deprivation")
 st.markdown("The socio economic data was measured on smaller geographic areas than a postcode district. These are the areas in red on the map. \
             Hover over these areas to reveal a tooltip showing stats about that area you can select in the select box below")
+st.markdown("A higher score for the socio economic variables means the social problems are greater, e.g. a high crime score means there is a lot of crime, \
+            a high education score means there are problems with educational deprivation")
+st.markdown("The Transaction data is aggregated to the postcode district level, e.g. SW11, E4. These areas are represented by dashed \
+            black lines on the map")
 st.divider()
 
 col1, col2 = st.columns(2)
 
 with col1:
     
-    socio_tooltip_choices = st.multiselect("Select 2019 Socio-economic data you want adding to the tooltip (red areas)", 
+    socio_tooltip_choices = st.multiselect("Select the metrics you want to see from the 2019 Socio-economic data on the smaller red areas on the map", 
                                     sorted(socio_economic.columns),
                                   default=['AreaName', 'CrimeScore', 'EnvironmentScore'])
     
@@ -140,7 +142,7 @@ with col1:
     #%%
         with col2:
             
-            display_cols = st.multiselect("Select Columns for Socio-economic Data at the Postcode District Level (black dotted line areas)", 
+            display_cols = st.multiselect("Select metrics from the Socio-economic data at the Postcode District Level, represented by black dotted areas on the map", 
                         options=sorted(district_groupby_socio_economic.columns), 
                         default=default_display_cols)
 
