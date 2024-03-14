@@ -241,9 +241,14 @@ with col1:
             # Display the chart in the Streamlit app
             st.altair_chart(property_type_chart)
 
+            options = sorted(district_groupby_socio_economic.columns)
             st.subheader("Customisable Scatterplot of District")
-            x_choice = st.selectbox("Choose the X axis variable", sorted(district_groupby_socio_economic.columns))
-            y_choice = st.selectbox("Choose the Y axis variable", sorted(district_groupby_socio_economic.columns))
+            x_choice = st.selectbox("Choose the X axis variable", 
+                                    options,
+                                    index=options.index('CrimeAvg'))
+            y_choice = st.selectbox("Choose the Y axis variable", 
+                                    options,
+                                    index=options.index("AvgPrice"))
             
             scatter_plot = alt.Chart(district_groupby_socio_economic.drop(columns='geometry')).mark_circle(size=60).encode(
             x=x_choice,
