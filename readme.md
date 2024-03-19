@@ -1,8 +1,9 @@
-# UK Land Registry Data Analysis with Socio-Economic Data    Merge
+# UK Land Registry Data Analysis with Socio-Economic Data Merge
+[Streamlit App For London Flats](https://land-registry-merge-socio-economic.streamlit.app/)
 
 ## Project Overview
 
-This project leverages UK Land Registry data, grouping it by postcode district (e.g. SW11, E3) and then enriching it with socio-economic data from 2019 to generate location based insights. The socioeconomic data is segmented into areas smaller than a postcode district, so the postcode district that the smaller areas reside within is found and then aggregated up to form socio-economic insights for the whole district. For example,aggregations on teh transaction dataset can tell us the average price for flats in SW11 in 2023, and the socio-economic data can tell us 
+This project leverages UK Land Registry data, grouping it by postcode district (e.g. SW11, E3) and then enriching it with socio-economic data from 2019 to generate location based insights. The socioeconomic data is segmented into areas smaller than a postcode district, so the postcode district that the smaller areas reside within is found and then aggregated up to form socio-economic insights for the whole district. For example,aggregations on teh transaction dataset can tell us the average price for flats in SW11 in 2023, and the socio-economic data can tell us.
 
 ![Example Dashboard Output Of London Postcode District Comparisons](/Images/LondonDistrictsComparison.png)
 

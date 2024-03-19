@@ -2,7 +2,7 @@
 import pandas as pd
 import regex as re
 import matplotlib.pyplot as plt
-import functions as func
+import src.functions as func
 import importlib
 importlib.reload(func)
 import geopandas as gpd
