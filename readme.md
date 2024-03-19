@@ -3,7 +3,7 @@
 
 ## Project Overview
 
-This project analyzes historic UK Land Registry data, sorted by postcode district (e.g., SW11, E3). Our approach enriches this data with 2019 socio-economic information, which originally covers finer geographic areas than postcode districts. To align these datasets, we aggregate the socio-economic data from these smaller areas to their corresponding postcode districts. This process allows us to integrate detailed socio-economic insights with property transaction data. For example, we can calculate the average price for flats in SW11 in 2023, while also providing a socio-economic profile of the area. By merging these datasets, we offer location-based insights, blending property values with socio-economic contexts to uncover deeper trends and patterns.
+This project analyzes historic UK Land Registry data, sorted by postcode district (e.g., SW11, E3). Our approach enriches this data with 2019 socio-economic information, which originally covers finer geographic areas than postcode districts. To align these datasets, we aggregate the socio-economic data from these smaller areas to their corresponding postcode districts using geospatial merging techniques. This process allows us to integrate detailed socio-economic insights with property transaction data. For example, we can calculate the average price for flats in SW11 in 2023, while also providing a socio-economic profile of the area. By merging these datasets, we offer location-based insights, blending property values with socio-economic contexts to uncover deeper trends and patterns.
 
 ![Example Dashboard Output Of London Postcode District Comparisons](/Images/LondonDistrictsComparison.png)
 
