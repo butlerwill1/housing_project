@@ -20,6 +20,7 @@ def load_district_groupby_socio_economic():
     for 2023 with the 2019 socio economic data aggregated up to the district level joined on."""
     gdf = gpd.read_file('district_groupby_socio_economic_london.gpkg', layer='socio')
     gdf.columns = func.clean_district_columns(gdf.columns)
+    gdf[(gdf['NumTransactions']<=100) & (gdf['Year']>= 2018)]
     return gdf
 
 @st.cache_data()
@@ -101,19 +102,16 @@ with col1:
     elif map_state == 'Choropleth':
         district_choices = district_groupby_socio_economic['PostDist'].unique()
 
-    num_transactions_threshold = st.slider("Select the Number of Transactions that is considered a good sample size for a Year")
+    # num_transactions_threshold = st.slider("Select the Number of Transactions that is considered a good sample size for a Year")
     # Define a linear color scale
     linear = cm.linear.YlGnBu_09.scale(district_groupby_socio_economic[choropleth_variable].min(), 
                                     district_groupby_socio_economic[choropleth_variable].max())
     
     
 
-    districts_below_transactions_thresh = \
-        district_groupby_socio_economic[(district_groupby_socio_economic['NumTransactions']<=num_transactions_threshold) & \
-                         (district_groupby_socio_economic['Year']>= 2018)] \
-                        ['PostcodeDistrict'].unique().tolist()
+    districts = district_groupby_socio_economic['PostcodeDistrict'].unique().tolist()
 
-    district_groupby_socio_economic = district_groupby_socio_economic[~district_groupby_socio_economic['PostcodeDistrict'].isin(districts_below_transactions_thresh)]
+    district_groupby_socio_economic = district_groupby_socio_economic[~district_groupby_socio_economic['PostcodeDistrict'].isin(districts)]
 
     socio_economic = socio_economic[socio_economic['PostDist'].isin(district_choices)]
 
