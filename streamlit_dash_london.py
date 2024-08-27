@@ -19,7 +19,7 @@ def load_district_groupby_socio_economic():
     """Load the data source which contains the transaction data results by postcode district
     for 2023 with the 2019 socio economic data aggregated up to the district level joined on."""
     gdf = gpd.read_file('district_groupby_socio_economic_london.gpkg', layer='socio')
-    gdf['geometry'] = gdf['geometry'].apply(lambda x: x.wkt) 
+    # gdf['geometry'] = gdf['geometry'].apply(lambda x: x.wkt) 
     gdf.columns = func.clean_district_columns(gdf.columns)
     #gdf[(gdf['NumTransactions']<=100) & (gdf['Year']>= 2018)]
     return gdf
