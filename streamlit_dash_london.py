@@ -19,8 +19,9 @@ def load_district_groupby_socio_economic():
     """Load the data source which contains the transaction data results by postcode district
     for 2023 with the 2019 socio economic data aggregated up to the district level joined on."""
     gdf = gpd.read_file('district_groupby_socio_economic_london.gpkg', layer='socio')
+    gdf['geometry'] = gdf['geometry'].apply(lambda x: x.wkt) 
     gdf.columns = func.clean_district_columns(gdf.columns)
-    gdf[(gdf['NumTransactions']<=100) & (gdf['Year']>= 2018)]
+    #gdf[(gdf['NumTransactions']<=100) & (gdf['Year']>= 2018)]
     return gdf
 
 @st.cache_data()
@@ -99,26 +100,23 @@ with col1:
         district_choices = st.multiselect("Select Postcode Districts", 
                                   sorted(district_groupby_socio_economic['PostDist'].unique()),
                                   default='E3')
+
     elif map_state == 'Choropleth':
         district_choices = district_groupby_socio_economic['PostDist'].unique()
-
+    #%%
     # num_transactions_threshold = st.slider("Select the Number of Transactions that is considered a good sample size for a Year")
     # Define a linear color scale
     linear = cm.linear.YlGnBu_09.scale(district_groupby_socio_economic[choropleth_variable].min(), 
                                     district_groupby_socio_economic[choropleth_variable].max())
-    
-    
-
-    districts = district_groupby_socio_economic['PostcodeDistrict'].unique().tolist()
-
-    district_groupby_socio_economic = district_groupby_socio_economic[~district_groupby_socio_economic['PostcodeDistrict'].isin(districts)]
 
     socio_economic = socio_economic[socio_economic['PostDist'].isin(district_choices)]
-
+    #%%
     # Filter the GeoDataFrame based on the selected districts
     selected_districts = district_groupby_socio_economic[
         district_groupby_socio_economic['PostDist'].isin(district_choices)
     ]
+
+    #%%
     if len(district_choices) == 0:
         st.warning("A District must be selected for the map to display")
     else:
@@ -137,7 +135,7 @@ with col1:
 
         default_display_cols = ['PostcodeDistrict', 'AvgPrice', '5YearAvg%PriceInc', 'CrimeAvg']
 
-    #%%
+        #%%
         with col2:
             
             display_cols = st.multiselect("Select metrics from the Socio-economic data at the Postcode District Level, represented by black dotted areas on the map", 
@@ -159,7 +157,7 @@ with col1:
             """,
             max_width=800,
         )
-        #%%
+       
         # Define the tooltip for the lower level socio economic polygons
         socio_tooltip = GeoJsonTooltip(
             fields=socio_tooltip_choices,
@@ -203,9 +201,9 @@ with col1:
         with col2:
             st.subheader("Comparison Table")
             # Display a dataframe of the selected metrics for comaprison between districts
-            st.dataframe(selected_districts[selected_districts['Year']==2023][display_cols],
-                        use_container_width=True,
-                        hide_index=True)
+            # st.dataframe(selected_districts[selected_districts['Year']==2023][display_cols],
+            #             use_container_width=True,
+            #             hide_index=True)
             
             # Display a graph of how the average price has changed over the years
             price_graph = price_graph[price_graph['PostcodeDistrict'].isin(district_choices)]
