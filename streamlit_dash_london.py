@@ -176,7 +176,7 @@ with col1:
 
         # Add the postcode district level polygons
         GeoJson(
-            district_groupby_socio_economic,
+            district_groupby_socio_economic[district_groupby_socio_economic['PostcodeDistrict'].isin(district_choices)],
             style_function=apply_style,  # Transparent polygons
             tooltip=postcode_tooltip
         ).add_to(m)
