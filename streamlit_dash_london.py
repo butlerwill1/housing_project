@@ -14,7 +14,7 @@ import branca.colormap as cm
 #-------------------------------------------------------------------------------------------------------
 
 # Decorate the function with st.cache to only run it once and cache the result
-@st.cache_data
+# @st.cache_data
 def load_district_groupby_socio_economic():
     """Load the data source which contains the transaction data results by postcode district
     for 2023 with the 2019 socio economic data aggregated up to the district level joined on."""
@@ -24,21 +24,21 @@ def load_district_groupby_socio_economic():
     #gdf[(gdf['NumTransactions']<=100) & (gdf['Year']>= 2018)]
     return gdf
 
-@st.cache_data
+# @st.cache_data
 def load_socio_economic():
     """Load the 2019 socio-economic dataset with polygons the original smaller area level"""
     socio_economic = gpd.read_file("socio_economic_postcode_london.gpkg")
 
     return socio_economic
 
-@st.cache_data
+# @st.cache_data
 def load_price_graph():
     """Load the dataset of the average price of property for every year for each postcode district"""
     price_graph = pd.read_csv("district_groupby_price_graph.csv")
     price_graph.columns = func.clean_district_columns(price_graph.columns)
     return price_graph
 
-@st.cache_data
+# @st.cache_data
 def load_property_type_groupby():
     """Load the dataset of count of property transactions by Postcode District and Property Type"""
     property_type_groupby = pd.read_csv("property_type_groupby.csv")
