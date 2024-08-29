@@ -1,5 +1,6 @@
 pip
-pandas==1.4.2
+pandas
+numpy
 regex==2022.10.31
 matplotlib==3.5.1
 geopandas==0.13.2
