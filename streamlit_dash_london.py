@@ -41,7 +41,7 @@ def load_price_graph():
 @st.cache_data
 def load_property_type_groupby():
     """Load the dataset of count of property transactions by Postcode District and Property Type"""
-    proßperty_type_groupby = pd.read_csv("property_type_groupby.csv")
+    property_type_groupby = pd.read_csv("property_type_groupby.csv")
     property_type_groupby.columns = func.clean_district_columns(property_type_groupby.columns)
     return property_type_groupby
 
