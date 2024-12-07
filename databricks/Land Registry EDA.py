@@ -10,6 +10,11 @@ from pyspark.sql.types import StringType, StructType, StructField
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ## Import Parquet Files of Land Registry Dataset of all UK Property Transactions over the last 30 years
+
+# COMMAND ----------
+
 base_path = "s3a://landregistryproject/land_registry_data.parquet/"
 
 df = spark.read.format("parquet").load(base_path)
@@ -71,7 +76,7 @@ def split_postcode(postcode):
              If the postcode is None, returns ('Unknown', 'Unknown', 'Unknown').
 
     Examples:
-        >>> split_postcode("SW1A 1AA")
+        >>> split_postcode("SW1A 1AA") 
         ('SW', 'SW1A', 'SW1A-1')
         
         >>> split_postcode("BT7 3AP")
@@ -84,7 +89,12 @@ def split_postcode(postcode):
         return 'Unknown', 'Unknown', 'Unknown'
     
     parts = postcode.split()
-    area = re.sub(r'[^A-Za-z]', '', parts[0])  # Extracts letters before the space
+
+    if postcode[:2] == 'W1': # The exception to the rule, a central London Postcode that's area code is one letter and one number 
+        area = 'W1'
+    else:
+        area = re.sub(r'[^A-Za-z]', '', parts[0])  # Extracts letters before the space
+    
     district = re.sub(r'[^A-Za-z0-9]', '', parts[0])  # Extracts letters and digits before the space
     
     # Check if there's a second part for the postcode
@@ -94,6 +104,14 @@ def split_postcode(postcode):
         sector = 'Unknown'
     
     return area, district, sector
+
+# COMMAND ----------
+
+postcode = 'W1D 1BB'
+
+# COMMAND ----------
+
+postcode[:2]
 
 # COMMAND ----------
 
@@ -108,7 +126,7 @@ def classify_london_postcode(area_code, district_code):
         str: A string indicating the classification of the postcode. It can be 'Central London', 'Greater London', or 'Outside London'. 
              If either `area_code` or `district_code` is None, it returns 'Unknown'.
 
-    Central London is defined by specific 'EC' and 'WC' area codes, as well as certain districts that have high population densities.
+    Central London is defined by specific 'EC' and 'WC' and 'W1' area codes,  
     Greater London encompasses a broader range of area codes, including those that overlap with Central London and several others 
     that cover the wider metropolitan area. If the area or district codes do not match any within these specified lists, the location 
     is considered to be Outside London.
@@ -122,9 +140,8 @@ def classify_london_postcode(area_code, district_code):
         - classify_london_postcode(None, 'EC2A') -> 'Unknown'
     """
     # Central London postcode areas and specific districts
-    central_london_areas = ['EC', 'WC']
-    central_london_districts = ['W1', 'SW1', 'NW1', 'SE1', 'E1', 'N1', 
-                                'WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
+    central_london_areas = ['EC', 'WC', 'W1']
+    central_london_districts = ['WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
                                 'EC1A', 'EC1M', 'EC1N', 'EC1P', 'EC1R', # These are the exceptions, Extra districts
                                 'EC1V', 'EC1Y', 'EC2A', 'EC2M', 'EC2N', # were made because of high population density
                                 'EC2P', 'EC2R', 'EC2V', 'EC2Y', 'EC3A', # in central London
@@ -152,6 +169,11 @@ def classify_london_postcode(area_code, district_code):
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Create an output data type that will be returned by the User Defined Function
+
+# COMMAND ----------
+
 split_output_schema = StructType([
     StructField("postcode_area", StringType(), True),
     StructField("postcode_district", StringType(), True),
@@ -171,12 +193,63 @@ display(df)
 
 # COMMAND ----------
 
-split_postcode_udf = udf(split_postcode, StringType())
-df = df.withColumn("is_london?", split_postcode_udf(df['postcode_area'], df['postcode_district']))
+classify_london_postcode_udf = udf(classify_london_postcode, StringType())
+df = df.withColumn("is_london?", classify_london_postcode_udf(df['postcode_area'], df['postcode_district']))
 
 # COMMAND ----------
 
-display(df)
+df.groupBy("is_london?").count().show()
+
+# COMMAND ----------
+
+central_london_areas = ['EC', 'WC', 'W1']
+central_london_districts = ['WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
+                                'EC1A', 'EC1M', 'EC1N', 'EC1P', 'EC1R', # These are the exceptions, Extra districts
+                                'EC1V', 'EC1Y', 'EC2A', 'EC2M', 'EC2N', # were made because of high population density
+                                'EC2P', 'EC2R', 'EC2V', 'EC2Y', 'EC3A', # in central London they have an extra letter on the first part ofthe postcode
+                                'EC3M', 'EC3N', 'EC3P', 'EC3R', 'EC3V',
+                                'EC4A', 'EC4M', 'EC4N', 'EC4P', 'EC4R',
+                                'EC4V', 'EC4Y', 'EC50']
+
+# Greater London postcode areas (including those overlapping with Central London)
+greater_london_areas = central_london_areas + ['E', 'N', 'NW', 'SE', 
+                                'SW', 'W', 'BR', 'CR', 'DA', 'EN', 'HA', 
+                                'IG', 'KT', 'RM', 'SM', 'TW', 'UB', 'WD']
+    
+df = df.withColumn("is_london?",
+                   when((df['postcode_area'].isin(central_london_areas))| (df['postcode_district'].isin(central_london_districts)), "Central London") \
+                   .when(df['postcode_area'].isin(greater_london_areas), "Greater London") \
+                   .otherwise("Outside London"))
+
+# COMMAND ----------
+
+df.groupBy("is_london?").count().show()
+
+# COMMAND ----------
+
+df.groupBy("is_london?").count().show()
+
+# COMMAND ----------
+
+df.groupBy("is_london?").count().show()
+
+# COMMAND ----------
+
+greater_london_sample = df.filter(col('is_london?')=='Greater London').sample(withReplacement=False, fraction=0.01).limit(100)
+central_london_sample = df.filter(col('is_london?')=='Central London').sample(withReplacement=False, fraction=0.01).limit(100)
+outside_london_sample = df.filter(col('is_london?')=='Outside London').sample(withReplacement=False, fraction=0.01).limit(100)
+
+# COMMAND ----------
+
+greater_london_sample.select("postcode", "town/city", "district", "county").show(100, truncate=False)
+
+# COMMAND ----------
+
+central_london_sample.select("postcode", "town/city", "district", "county").show(100, truncate=False)
+
+# COMMAND ----------
+
+outside_london_sample.select("postcode", "town/city", "district", "county").show(100, truncate=False)
 
 # COMMAND ----------
 
