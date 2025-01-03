@@ -33,10 +33,6 @@ df.printSchema()
 
 # COMMAND ----------
 
-df.count()
-
-# COMMAND ----------
-
 def split_postcode(postcode):
     """Splits a given UK postcode into its area, district, and sector components.
 
@@ -77,10 +73,16 @@ def split_postcode(postcode):
 
     Examples:
         >>> split_postcode("SW1A 1AA") 
-        ('SW', 'SW1A', 'SW1A-1')
+        ('SW1', 'SW1A', 'SW1A-1')
+
+        >>> split_postcode("WC1A 1AY") 
+        ('WC1', 'WC1A', 'WC1A 1')
         
         >>> split_postcode("BT7 3AP")
         ('BT', 'BT7', 'BT7-3')
+
+        >>> split_postcode("N6 5UQ")
+        ('N6', 'BT7', 'BT7-3')
         
         >>> split_postcode(None)
         ('Unknown', 'Unknown', 'Unknown')
@@ -89,13 +91,10 @@ def split_postcode(postcode):
         return 'Unknown', 'Unknown', 'Unknown'
     
     parts = postcode.split()
-
-    if postcode[:2] == 'W1': # The exception to the rule, a central London Postcode that's area code is one letter and one number 
-        area = 'W1'
-    else:
-        area = re.sub(r'[^A-Za-z]', '', parts[0])  # Extracts letters before the space
+   
+    area = re.sub(r'[^A-Za-z]+', '', parts[0])  # Extracts letters before the space
     
-    district = re.sub(r'[^A-Za-z0-9]', '', parts[0])  # Extracts letters and digits before the space
+    district = parts[0]  # Extracts letters and digits before the space
     
     # Check if there's a second part for the postcode
     if len(parts) > 1 and parts[1]:
@@ -107,63 +106,23 @@ def split_postcode(postcode):
 
 # COMMAND ----------
 
-postcode = 'W1D 1BB'
-
-# COMMAND ----------
-
-postcode[:2]
-
-# COMMAND ----------
-
-def classify_london_postcode(area_code, district_code):
-    """ Classifies a London postcode into Central London, Greater London, or Outside London based on the area code and district code.
-
-    Args:
-        area_code (str): The area code of the postcode, which is the initial letter(s) before any digits (e.g., "EC").
-        district_code (str): The district code of the postcode, which may include letters and digits (e.g., "EC1").
-
-    Returns:
-        str: A string indicating the classification of the postcode. It can be 'Central London', 'Greater London', or 'Outside London'. 
-             If either `area_code` or `district_code` is None, it returns 'Unknown'.
-
-    Central London is defined by specific 'EC' and 'WC' and 'W1' area codes,  
-    Greater London encompasses a broader range of area codes, including those that overlap with Central London and several others 
-    that cover the wider metropolitan area. If the area or district codes do not match any within these specified lists, the location 
-    is considered to be Outside London.
-
-    Examples:
-        - classify_london_postcode('EC', 'EC1A') -> 'Central London'
-        - classify_london_postcode('W', 'W1') -> 'Central London'
-        - classify_london_postcode('N', 'N1') -> 'Central London'
-        - classify_london_postcode('BR', 'BR1') -> 'Greater London'
-        - classify_london_postcode('ME', 'ME1') -> 'Outside London'
-        - classify_london_postcode(None, 'EC2A') -> 'Unknown'
-    """
+def classify_london_postcode(area_code):
+    
     # Central London postcode areas and specific districts
-    central_london_areas = ['EC', 'WC', 'W1']
-    central_london_districts = ['WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
-                                'EC1A', 'EC1M', 'EC1N', 'EC1P', 'EC1R', # These are the exceptions, Extra districts
-                                'EC1V', 'EC1Y', 'EC2A', 'EC2M', 'EC2N', # were made because of high population density
-                                'EC2P', 'EC2R', 'EC2V', 'EC2Y', 'EC3A', # in central London
-                                'EC3M', 'EC3N', 'EC3P', 'EC3R', 'EC3V',
-                                'EC4A', 'EC4M', 'EC4N', 'EC4P', 'EC4R',
-                                'EC4V', 'EC4Y', 'EC50']
+    inner_london_areas = ['EC', 'WC', 'N', 'NW', 'E', 'SE', 'SW', 'W']
+
+    outer_london_areas = ['HA', 'UB', 'EN', 'KT', 'TW', 'BR', 'RM']
     
-    # Greater London postcode areas (including those overlapping with Central London)
-    greater_london_areas = central_london_areas + ['E', 'N', 'NW', 'SE', 
-                                'SW', 'W', 'BR', 'CR', 'DA', 'EN', 'HA', 
-                                'IG', 'KT', 'RM', 'SM', 'TW', 'UB', 'WD']
-    
-    if any(var is None for var in [area_code, district_code]):
+    if any(var is None for var in [area_code]):
         return 'Unknown'
     
     # Check if the postcode is in Central London
-    if area_code in central_london_areas or district_code in central_london_districts:
-        return 'Central London'
+    if area_code in inner_london_areas:
+        return 'Inner London'
     
     # Check if the postcode is in Greater London
-    if area_code in greater_london_areas:
-        return 'Greater London'
+    if area_code in outer_london_areas:
+        return 'Outer London'
     
     return 'Outside London'
 
@@ -194,7 +153,7 @@ display(df)
 # COMMAND ----------
 
 classify_london_postcode_udf = udf(classify_london_postcode, StringType())
-df = df.withColumn("is_london?", classify_london_postcode_udf(df['postcode_area'], df['postcode_district']))
+df = df.withColumn("is_london?", classify_london_postcode_udf(df['postcode_area']))
 
 # COMMAND ----------
 
@@ -202,24 +161,14 @@ df.groupBy("is_london?").count().show()
 
 # COMMAND ----------
 
-central_london_areas = ['EC', 'WC', 'W1']
-central_london_districts = ['WC1', 'WC2', 'EC1', 'EC2', 'EC3', 'EC4',
-                                'EC1A', 'EC1M', 'EC1N', 'EC1P', 'EC1R', # These are the exceptions, Extra districts
-                                'EC1V', 'EC1Y', 'EC2A', 'EC2M', 'EC2N', # were made because of high population density
-                                'EC2P', 'EC2R', 'EC2V', 'EC2Y', 'EC3A', # in central London they have an extra letter on the first part ofthe postcode
-                                'EC3M', 'EC3N', 'EC3P', 'EC3R', 'EC3V',
-                                'EC4A', 'EC4M', 'EC4N', 'EC4P', 'EC4R',
-                                'EC4V', 'EC4Y', 'EC50']
+# Central London postcode areas and specific districts
+inner_london_areas = ['EC', 'WC', 'N', 'NW', 'E', 'SE', 'SW', 'W']
 
-# Greater London postcode areas (including those overlapping with Central London)
-greater_london_areas = central_london_areas + ['E', 'N', 'NW', 'SE', 
-                                'SW', 'W', 'BR', 'CR', 'DA', 'EN', 'HA', 
-                                'IG', 'KT', 'RM', 'SM', 'TW', 'UB', 'WD']
-    
-df = df.withColumn("is_london?",
-                   when((df['postcode_area'].isin(central_london_areas))| (df['postcode_district'].isin(central_london_districts)), "Central London") \
-                   .when(df['postcode_area'].isin(greater_london_areas), "Greater London") \
-                   .otherwise("Outside London"))
+outer_london_areas = ['HA', 'UB', 'EN', 'KT', 'TW', 'BR', 'RM']
+
+df = df.withColumn("is_london?", when(df["postcode_area"].isin(inner_london_area), "Inner London") \
+                                .when(df["postcode_area"].isin(outer_london_area), "Outer London") \
+                                .otherwise("Outside London"))
 
 # COMMAND ----------
 
